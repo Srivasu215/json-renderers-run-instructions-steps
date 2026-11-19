@@ -1,0 +1,26 @@
+{
+  "name": "json-renderers-run-instructions-steps",
+  "version": "1.0.0",
+  "description": "Sequential blueprint instruction step runner for JSON renderers",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "build": "npx @keshavsoft/build-cli"
+  },
+  "dependencies": {
+    "json-transformer-funcs-one-dimension": "^1.9.9",
+    "json-transformer-funcs-primitive": "^1.9.3",
+    "json-transformer-funcs-row-on-column": "^1.2.1",
+    "json-write-path": "^1.6.1",
+    "jsonpathly": "^4.0.0",
+    "spec-repo": "^1.19.2"
+  }
+}
