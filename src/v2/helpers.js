@@ -38,5 +38,9 @@ export const writeResult = (state, destinationPath, result, showLog = false) => 
         return;
     }
 
-    writePath(state, destinationPath, result, showLog);
+    try {
+        writePath(state, destinationPath, result, showLog);
+    } catch {
+        // Safe skip when destination container does not exist in target canvas
+    }
 };
