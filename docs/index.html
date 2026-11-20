@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>json-renderers-run-instructions-steps | Declarative Instruction Step Runner</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --bg-body: #ffffff;
+            --bg-subtle: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.95);
+
+            --text-title: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+
+            --primary: #4f46e5;
+            --primary-light: #eef2ff;
+            --primary-glow: rgba(79, 70, 229, 0.25);
+
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-purple: #8b5cf6;
+
+            --border: #e2e8f0;
+            --border-hover: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-body);
+            font-family: var(--font-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%),
+                radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 28px 28px;
+        }
+
+        .spotlight-follower {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.08) 0%, rgba(6, 182, 212, 0.03) 40%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            transition: width 0.3s ease, height 0.3s ease;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .navbar-brand span {
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            padding: 5rem 0 3.5rem;
+            position: relative;
+        }
+
+        .gradient-pill {
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            border: 1px solid #c7d2fe;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.82rem;
+            letter-spacing: 0.04em;
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
+            transition: transform 0.2s ease;
+        }
+        .gradient-pill:hover {
+            transform: scale(1.05);
+        }
+
+        .hero-title {
+            font-size: clamp(2.3rem, 5vw, 3.8rem);
+            font-weight: 800;
+            color: var(--text-title);
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tilt-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+        }
+
+        .tilt-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 35px -12px rgba(79, 70, 229, 0.14);
+            border-color: #cbd5e1;
+        }
+
+        .dimension-card {
+            border-top: 4px solid var(--primary);
+            height: 100%;
+        }
+        .dimension-card.dim-0d { border-top-color: var(--accent-emerald); }
+        .dimension-card.dim-1d { border-top-color: var(--primary); }
+        .dimension-card.dim-2d { border-top-color: var(--accent-cyan); }
+
+        .stat-badge {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s ease;
+        }
+        .stat-badge:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1.2;
+        }
+
+        .code-box {
+            background: #0f172a;
+            color: #f1f5f9;
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 0.25rem 0.6rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            color: #fff;
+        }
+
+        /* Interactive Simulator */
+        .simulator-box {
+            background: #ffffff;
+            border: 2px solid #e0e7ff;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(79, 70, 229, 0.08);
+            overflow: hidden;
+        }
+        .sim-header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            color: #ffffff;
+            padding: 1.25rem 1.75rem;
+        }
+        .step-pill {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 999px;
+            padding: 0.4rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .step-pill.active {
+            background: #4f46e5;
+            color: #fff;
+            border-color: #4f46e5;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+        }
+        .step-pill.completed {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #a7f3d0;
+        }
+
+        .tree-preview {
+            background: #090d16;
+            color: #38bdf8;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            padding: 1.25rem;
+            border-radius: 10px;
+            max-height: 380px;
+            overflow-y: auto;
+        }
+
+        footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 4rem 0 2rem;
+            margin-top: 5rem;
+        }
+        footer a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        footer a:hover {
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="spotlight-follower" id="spotlight"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="./index.html">
+                <i class="bi bi-diagram-3-fill text-primary fs-4"></i>
+                <span class="text-dark">json-renderers-run-instructions-steps</span>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-1">v1.4.2</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navContent">
+                <ul class="navbar-nav ms-auto align-items-center gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold active text-primary" href="./index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-secondary" href="./pages/the-story.html">The Story</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-secondary" href="./pages/architecture.html">Architecture</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-secondary" href="./pages/api-guide.html">API Guide</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-secondary" href="./pages/samples-showcase.html">Samples & Live Demos</a>
+                    </li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-outline-dark btn-sm rounded-pill px-3" href="https://github.com/keshavsoft/json-renderers-run-instructions-steps" target="_blank">
+                            <i class="bi bi-github me-1"></i> GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero text-center">
+        <div class="container">
+            <div class="mb-3">
+                <span class="gradient-pill">
+                    <i class="bi bi-cpu-fill"></i> Dimensional Orchestration Engine v4
+                </span>
+            </div>
+            <h1 class="hero-title mb-3">
+                Sequential Blueprint Step Runner<br>
+                for <span class="gradient-text">Declarative JSON Renderers</span>
+            </h1>
+            <p class="lead text-secondary mx-auto mb-4" style="max-width: 780px;">
+                Transforms raw input data into fully-formed declarative UI specifications by orchestrating modular instruction blueprints across 0D, 1D, and 2D spatial dimensions with zero DOM overhead.
+            </p>
+            <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
+                <a href="#simulator" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm" onclick="triggerConfetti()">
+                    <i class="bi bi-play-circle-fill me-2"></i> Try Interactive Simulator
+                </a>
+                <a href="./pages/api-guide.html" class="btn btn-light btn-lg rounded-pill px-4 border">
+                    <i class="bi bi-book-half me-2"></i> API Documentation
+                </a>
+                <a href="./pages/samples-showcase.html" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                    <i class="bi bi-window-stack me-2"></i> Browse Samples
+                </a>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="row g-3 justify-content-center text-start">
+                <div class="col-6 col-md-3">
+                    <div class="stat-badge">
+                        <div class="stat-number">3D</div>
+                        <div class="fw-semibold text-dark">Spatial Orchestration</div>
+                        <small class="text-muted">0D, 1D, and 2D transformers</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-badge">
+                        <div class="stat-number">4 Lines</div>
+                        <div class="fw-semibold text-dark">executeStep Runtime</div>
+                        <small class="text-muted">Pure & zero defensive bloat</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-badge">
+                        <div class="stat-number">0 DOM</div>
+                        <div class="fw-semibold text-dark">Pure JSON Tree</div>
+                        <small class="text-muted">Runs identically in Node & Web</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-badge">
+                        <div class="stat-number">100%</div>
+                        <div class="fw-semibold text-dark">Deterministic</div>
+                        <small class="text-muted">Single source of truth via blueprints</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Step-Runner Simulator -->
+    <section class="py-5 bg-subtle" id="simulator">
+        <div class="container">
+            <div class="text-center mb-4">
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold mb-2">Interactive Visualizer</span>
+                <h2 class="fw-bold">Watch Instructions Execute Step-by-Step</h2>
+                <p class="text-muted">Select a UI component and simulate how sequential instructions mutate the target canvas spec in real-time.</p>
+            </div>
+
+            <div class="simulator-box">
+                <div class="sim-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-terminal-fill fs-5 text-warning"></i>
+                        <span class="fw-bold">Step Orchestration Canvas:</span>
+                        <select id="componentSelect" class="form-select form-select-sm bg-dark text-white border-secondary w-auto ms-2" onchange="loadComponentSteps()">
+                            <option value="table">HTML &lt;table&gt; (Colgroup + Header + Body)</option>
+                            <option value="select">HTML &lt;select&gt; (Options Matrix)</option>
+                            <option value="datalist">HTML &lt;datalist&gt; (Datalist Options)</option>
+                            <option value="form">HTML &lt;form&gt; (Input Controls & Labels)</option>
+                        </select>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-light rounded-pill" onclick="resetSimulator()">
+                            <i class="bi bi-arrow-counterclockwise"></i> Reset
+                        </button>
+                        <button class="btn btn-sm btn-success rounded-pill px-3" onclick="runNextStep()">
+                            <i class="bi bi-play-fill"></i> Execute Next Step
+                        </button>
+                        <button class="btn btn-sm btn-light rounded-pill px-3" onclick="runAllSteps()">
+                            <i class="bi bi-fast-forward-fill"></i> Run All
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-4">
+                    <!-- Steps progression bar -->
+                    <div class="mb-3">
+                        <div class="small fw-bold text-uppercase text-muted mb-2">Instruction Execution Pipeline</div>
+                        <div class="d-flex flex-wrap gap-2" id="stepsPillsContainer">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-lg-5">
+                            <div class="card h-100 border-0 shadow-sm p-3 bg-light">
+                                <h6 class="fw-bold text-dark d-flex align-items-center gap-2">
+                                    <i class="bi bi-info-circle-fill text-primary"></i> Current Step Details
+                                </h6>
+                                <div id="stepDetails" class="small text-secondary mt-2">
+                                    Click <strong>"Execute Next Step"</strong> or select an instruction to inspect its dimensional type, source path, template key, and destination mount point.
+                                </div>
+                                <hr class="my-3">
+                                <div class="small">
+                                    <strong>Status:</strong> <span id="simStatus" class="badge bg-secondary">Ready to execute</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-7">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="small fw-bold text-muted font-monospace">TARGET SPEC CANVAS (MUTATED STATE)</span>
+                                <span class="badge bg-dark font-monospace text-info" id="nodeCountBadge">Nodes: 1</span>
+                            </div>
+                            <pre class="tree-preview" id="specOutput"><code>// Base canvas specification ready...
+{
+  "tagName": "table",
+  "attributes": { "class": "table table-striped table-hover" },
+  "children": []
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3D Dimensional Orchestration Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="badge bg-info-subtle text-info-emphasis px-3 py-2 rounded-pill fw-bold mb-2">Architectural Foundation</span>
+                <h2 class="fw-bold">Tri-Dimensional Delegation Framework</h2>
+                <p class="text-muted mx-auto" style="max-width: 650px;">
+                    Zero loops inside the engine. The runner acts as a pure coordinator, delegating data transformation directly to specialized mathematical dimension handlers.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <!-- 0D Primitive -->
+                <div class="col-md-4">
+                    <div class="tilt-card dimension-card dim-0d">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="badge bg-success-subtle text-success fs-6 fw-bold px-3 py-1 rounded-pill">0D Dimension</span>
+                            <i class="bi bi-dot text-success fs-3"></i>
+                        </div>
+                        <h4 class="fw-bold">Primitive Interpolation</h4>
+                        <p class="text-muted small">
+                            Maps single scalar values, objects, or containers into declarative node templates. Ideal for cards, badges, and layout wrappers.
+                        </p>
+                        <div class="p-2 bg-light border rounded small font-monospace text-dark mb-3">
+                            applyTemplate(source, template)
+                        </div>
+                        <ul class="list-unstyled small text-secondary">
+                            <li><i class="bi bi-check2 text-success me-1"></i> Powered by <code>json-transformer-funcs-primitive</code></li>
+                            <li><i class="bi bi-check2 text-success me-1"></i> Evaluates property tokens and expressions</li>
+                            <li><i class="bi bi-check2 text-success me-1"></i> Generates single structural shells</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 1D Linear -->
+                <div class="col-md-4">
+                    <div class="tilt-card dimension-card dim-1d">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="badge bg-primary-subtle text-primary fs-6 fw-bold px-3 py-1 rounded-pill">1D Dimension</span>
+                            <i class="bi bi-dash text-primary fs-3"></i>
+                        </div>
+                        <h4 class="fw-bold">Linear Collection</h4>
+                        <p class="text-muted small">
+                            Projects a 1-dimensional array across an instruction template. Builds sequential siblings like colgroups, table headers, and list items.
+                        </p>
+                        <div class="p-2 bg-light border rounded small font-monospace text-dark mb-3">
+                            fromCollection(items, template)
+                        </div>
+                        <ul class="list-unstyled small text-secondary">
+                            <li><i class="bi bi-check2 text-primary me-1"></i> Powered by <code>json-transformer-funcs-one-dimension</code></li>
+                            <li><i class="bi bi-check2 text-primary me-1"></i> Iterates linear collections with column mappings</li>
+                            <li><i class="bi bi-check2 text-primary me-1"></i> Creates <code>&lt;col&gt;</code> and <code>&lt;th&gt;</code> specs</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 2D Matrix -->
+                <div class="col-md-4">
+                    <div class="tilt-card dimension-card dim-2d">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="badge bg-info-subtle text-info fs-6 fw-bold px-3 py-1 rounded-pill">2D Dimension</span>
+                            <i class="bi bi-grid-3x3 text-info fs-3"></i>
+                        </div>
+                        <h4 class="fw-bold">Cartesian Matrix</h4>
+                        <p class="text-muted small">
+                            Computes cross-product coordinates across rows and columns. Constructs complex 2D data grids, selects, and nested option sets.
+                        </p>
+                        <div class="p-2 bg-light border rounded small font-monospace text-dark mb-3">
+                            rowOnColumn / columnOnRow
+                        </div>
+                        <ul class="list-unstyled small text-secondary">
+                            <li><i class="bi bi-check2 text-info me-1"></i> Powered by <code>json-transformer-funcs-two-dimensions</code></li>
+                            <li><i class="bi bi-check2 text-info me-1"></i> Merges column specifications with data row keys</li>
+                            <li><i class="bi bi-check2 text-info me-1"></i> Handles <code>&lt;tbody&gt;</code>, <code>&lt;tr&gt;</code>, and <code>&lt;td&gt;</code></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Showcase Section -->
+    <section class="py-5 bg-subtle">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-5">
+                    <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold mb-2">Developer Experience</span>
+                    <h2 class="fw-bold">Simple, Clean, and Agnostic</h2>
+                    <p class="text-secondary">
+                        Whether you are rendering a data table, an interactive select box, a datalist auto-complete, or dynamic input form fields, the runner API remains completely uniform:
+                    </p>
+                    <div class="d-flex flex-column gap-3 mt-4">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="bg-primary text-white p-2 rounded-circle fs-6"><i class="bi bi-check-lg"></i></div>
+                            <div>
+                                <strong>Deterministic Execution:</strong>
+                                <p class="text-muted small mb-0">Runs identical instruction sequences across browsers and backend server runtimes.</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="bg-primary text-white p-2 rounded-circle fs-6"><i class="bi bi-check-lg"></i></div>
+                            <div>
+                                <strong>Decoupled Blueprints:</strong>
+                                <p class="text-muted small mb-0">Instructions live independently in <code>declarative-instructions</code> and can be shared across any renderer.</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="bg-primary text-white p-2 rounded-circle fs-6"><i class="bi bi-check-lg"></i></div>
+                            <div>
+                                <strong>In-Place Tree Writing:</strong>
+                                <p class="text-muted small mb-0">Powered by <code>jsonpathly</code> and <code>json-write-path</code> for blazing-fast tree assembly without GC spikes.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="code-box shadow-lg">
+                        <button class="copy-btn" onclick="copySnippet(this)"><i class="bi bi-clipboard"></i> Copy</button>
+                        <pre><code><span class="text-warning">import</span> runInstructions, { executeStep } <span class="text-warning">from</span> <span class="text-info">"json-renderers-run-instructions-steps"</span>;
+<span class="text-warning">import</span> { spec } <span class="text-warning">from</span> <span class="text-info">"spec-repo"</span>;
+
+<span class="text-muted">// 1. Initialize clean base canvas template</span>
+<span class="text-warning">const</span> base = structuredClone(spec.tableSimple);
+
+<span class="text-muted">// 2. Execute blueprint instructions sequentially</span>
+<span class="text-warning">const</span> resultSpec = runInstructions({
+    instructions: [
+        <span class="text-success">"buildColgroup"</span>,  <span class="text-muted">// 1D: maps columns to &lt;colgroup&gt;&lt;col&gt;</span>
+        <span class="text-success">"buildHeader"</span>,    <span class="text-muted">// 1D: maps columns to &lt;thead&gt;&lt;th&gt;</span>
+        <span class="text-success">"buildBody"</span>       <span class="text-muted">// 2D: maps rows x columns to &lt;tbody&gt;&lt;tr&gt;&lt;td&gt;</span>
+    ],
+    base,
+    data: {
+        columns: [
+            { key: <span class="text-info">"id"</span>, label: <span class="text-info">"ID"</span> },
+            { key: <span class="text-info">"name"</span>, label: <span class="text-info">"Name"</span> }
+        ],
+        data: [
+            { id: <span class="text-info">"101"</span>, name: <span class="text-info">"Alpha"</span> },
+            { id: <span class="text-info">"102"</span>, name: <span class="text-info">"Beta"</span> }
+        ]
+    },
+    showLog: <span class="text-info">true</span>
+});
+
+console.log(<span class="text-info">"Rendered JSON UI Spec:"</span>, resultSpec);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row g-4 mb-4">
+                <div class="col-md-5">
+                    <h5 class="text-white fw-bold d-flex align-items-center gap-2">
+                        <i class="bi bi-diagram-3-fill text-primary"></i> json-renderers-run-instructions-steps
+                    </h5>
+                    <p class="small text-muted">
+                        Part of the KeshavSoft declarative component ecosystem. Engineered for deterministic, fast, zero-DOM JSON specification generation.
+                    </p>
+                </div>
+                <div class="col-md-2 offset-md-1">
+                    <h6 class="text-white fw-bold">Documentation</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2">
+                        <li><a href="./pages/the-story.html">The Story</a></li>
+                        <li><a href="./pages/architecture.html">Architecture</a></li>
+                        <li><a href="./pages/api-guide.html">API Reference</a></li>
+                        <li><a href="./pages/samples-showcase.html">Samples Showcase</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2">
+                    <h6 class="text-white fw-bold">Ecosystem</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2">
+                        <li><a href="https://github.com/keshavsoft/declarative-instructions" target="_blank">declarative-instructions</a></li>
+                        <li><a href="https://github.com/keshavsoft/json-transformer-funcs-two-dimensions" target="_blank">json-transformer-funcs-2d</a></li>
+                        <li><a href="https://github.com/keshavsoft/spec-repo" target="_blank">spec-repo</a></li>
+                        <li><a href="https://github.com/keshavsoft/json-write-path" target="_blank">json-write-path</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2">
+                    <h6 class="text-white fw-bold">Repository</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2">
+                        <li><a href="https://github.com/keshavsoft/json-renderers-run-instructions-steps" target="_blank">GitHub Repo</a></li>
+                        <li><a href="https://npmjs.com/package/json-renderers-run-instructions-steps" target="_blank">npm Package</a></li>
+                        <li><a href="./ARCHITECTURE.md">ARCHITECTURE.md</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-top border-secondary pt-3 d-flex flex-wrap justify-content-between align-items-center small">
+                <span>&copy; 2026 KeshavSoft. Released under the MIT License.</span>
+                <span>Created for declarative JSON component pipelines.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Simulator Script -->
+    <script>
+        // Mouse spotlight follower
+        const spotlight = document.getElementById('spotlight');
+        window.addEventListener('mousemove', (e) => {
+            spotlight.style.left = e.clientX + 'px';
+            spotlight.style.top = e.clientY + 'px';
+        });
+
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 50,
+                    spread: 60,
+                    origin: { y: 0.8 }
+                });
+            }
+        }
+
+        function copySnippet(btn) {
+            const code = btn.nextElementSibling.innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const orig = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-check2"></i> Copied!';
+                setTimeout(() => btn.innerHTML = orig, 1800);
+            });
+        }
+
+        // Component simulation definitions
+        const components = {
+            table: {
+                baseName: "tableSimple",
+                base: {
+                    tagName: "table",
+                    attributes: { class: "table table-striped table-hover" },
+                    children: [
+                        { tagName: "colgroup", children: [] },
+                        { tagName: "thead", children: [{ tagName: "tr", children: [] }] },
+                        { tagName: "tbody", children: [] }
+                    ]
+                },
+                steps: [
+                    {
+                        key: "buildColgroup",
+                        name: "1. buildColgroup",
+                        dim: "1D (fromCollection)",
+                        desc: "Resolves columns data and populates <colgroup> with <col> elements defining widths and styling.",
+                        action: (spec) => {
+                            spec.children[0].children = [
+                                { tagName: "col", attributes: { style: "width: 25%" } },
+                                { tagName: "col", attributes: { style: "width: 50%" } },
+                                { tagName: "col", attributes: { style: "width: 25%" } }
+                            ];
+                        }
+                    },
+                    {
+                        key: "buildHeader",
+                        name: "2. buildHeader",
+                        dim: "1D (fromCollection)",
+                        desc: "Maps column labels into <thead><tr><th> elements with accessibility attributes.",
+                        action: (spec) => {
+                            spec.children[1].children[0].children = [
+                                { tagName: "th", innerText: "ID" },
+                                { tagName: "th", innerText: "Product Name" },
+                                { tagName: "th", innerText: "Price ($)" }
+                            ];
+                        }
+                    },
+                    {
+                        key: "buildBody",
+                        name: "3. buildBody",
+                        dim: "2D (rowOnColumn)",
+                        desc: "Computes 2D Cartesian grid: merges columns with dataset rows to produce <tbody><tr><td> elements.",
+                        action: (spec) => {
+                            spec.children[2].children = [
+                                {
+                                    tagName: "tr",
+                                    children: [
+                                        { tagName: "td", innerText: "101" },
+                                        { tagName: "td", innerText: "Mechanical Keyboard" },
+                                        { tagName: "td", innerText: "120" }
+                                    ]
+                                },
+                                {
+                                    tagName: "tr",
+                                    children: [
+                                        { tagName: "td", innerText: "102" },
+                                        { tagName: "td", innerText: "Ergonomic Mouse" },
+                                        { tagName: "td", innerText: "75" }
+                                    ]
+                                }
+                            ];
+                        }
+                    }
+                ]
+            },
+            select: {
+                baseName: "selectBase",
+                base: {
+                    tagName: "select",
+                    attributes: { class: "form-select", name: "product_id" },
+                    children: []
+                },
+                steps: [
+                    {
+                        key: "buildSelectWithOptions",
+                        name: "1. buildSelectWithOptions",
+                        dim: "2D (columnOnRow)",
+                        desc: "Maps dataset row keys to option values and display texts inside the <select> tag.",
+                        action: (spec) => {
+                            spec.children = [
+                                { tagName: "option", attributes: { value: "" }, innerText: "-- Select an item --" },
+                                { tagName: "option", attributes: { value: "101" }, innerText: "Mechanical Keyboard ($120)" },
+                                { tagName: "option", attributes: { value: "102" }, innerText: "Ergonomic Mouse ($75)" }
+                            ];
+                        }
+                    }
+                ]
+            },
+            datalist: {
+                baseName: "dataListSimple",
+                base: {
+                    tagName: "datalist",
+                    attributes: { id: "product-options" },
+                    children: []
+                },
+                steps: [
+                    {
+                        key: "buildDataListWithOptions",
+                        name: "1. buildDataListWithOptions",
+                        dim: "2D (columnOnRow)",
+                        desc: "Generates autocomplete <option> nodes inside <datalist> from columns and dataset entries.",
+                        action: (spec) => {
+                            spec.children = [
+                                { tagName: "option", attributes: { value: "Mechanical Keyboard" } },
+                                { tagName: "option", attributes: { value: "Ergonomic Mouse" } },
+                                { tagName: "option", attributes: { value: "UltraWide Monitor" } }
+                            ];
+                        }
+                    }
+                ]
+            },
+            form: {
+                baseName: "formSimple",
+                base: {
+                    tagName: "form",
+                    attributes: { class: "needs-validation" },
+                    children: []
+                },
+                steps: [
+                    {
+                        key: "buildFormField",
+                        name: "1. buildFormField",
+                        dim: "0D / 1D (fromCollection)",
+                        desc: "Interpolates column definition fields into structured form groups with <label> and <input> controls.",
+                        action: (spec) => {
+                            spec.children = [
+                                {
+                                    tagName: "div",
+                                    attributes: { class: "mb-3" },
+                                    children: [
+                                        { tagName: "label", attributes: { class: "form-label" }, innerText: "Product Name" },
+                                        { tagName: "input", attributes: { class: "form-control", type: "text", name: "name" } }
+                                    ]
+                                },
+                                {
+                                    tagName: "div",
+                                    attributes: { class: "mb-3" },
+                                    children: [
+                                        { tagName: "label", attributes: { class: "form-label" }, innerText: "Price ($)" },
+                                        { tagName: "input", attributes: { class: "form-control", type: "number", name: "price" } }
+                                    ]
+                                }
+                            ];
+                        }
+                    }
+                ]
+            }
+        };
+
+        let currentComponent = "table";
+        let currentStepIndex = -1;
+        let activeCanvasSpec = null;
+
+        function loadComponentSteps() {
+            const select = document.getElementById("componentSelect");
+            currentComponent = select.value;
+            resetSimulator();
+        }
+
+        function resetSimulator() {
+            const comp = components[currentComponent];
+            activeCanvasSpec = JSON.parse(JSON.stringify(comp.base));
+            currentStepIndex = -1;
+
+            const container = document.getElementById("stepsPillsContainer");
+            container.innerHTML = "";
+
+            comp.steps.forEach((step, idx) => {
+                const pill = document.createElement("div");
+                pill.className = "step-pill";
+                pill.id = `pill-step-${idx}`;
+                pill.innerHTML = `<span>${step.name}</span> <span class="badge bg-secondary-subtle text-dark">${step.dim.split(' ')[0]}</span>`;
+                container.appendChild(pill);
+            });
+
+            document.getElementById("stepDetails").innerHTML = "Click <strong>'Execute Next Step'</strong> to execute instructions in order.";
+            document.getElementById("simStatus").className = "badge bg-secondary";
+            document.getElementById("simStatus").innerText = "Ready to execute";
+            updateTreeDisplay();
+        }
+
+        function countNodes(node) {
+            let count = 1;
+            if (node.children && Array.isArray(node.children)) {
+                node.children.forEach(c => count += countNodes(c));
+            }
+            return count;
+        }
+
+        function updateTreeDisplay() {
+            const pre = document.getElementById("specOutput");
+            pre.innerHTML = `<code>${JSON.stringify(activeCanvasSpec, null, 2)}</code>`;
+            const badge = document.getElementById("nodeCountBadge");
+            badge.innerText = `Nodes: ${countNodes(activeCanvasSpec)}`;
+        }
+
+        function runNextStep() {
+            const comp = components[currentComponent];
+            if (currentStepIndex + 1 >= comp.steps.length) {
+                document.getElementById("simStatus").className = "badge bg-success";
+                document.getElementById("simStatus").innerText = "All steps complete!";
+                triggerConfetti();
+                return;
+            }
+
+            currentStepIndex++;
+            const step = comp.steps[currentStepIndex];
+
+            // Update pill styling
+            const pill = document.getElementById(`pill-step-${currentStepIndex}`);
+            if (pill) {
+                pill.classList.remove("completed");
+                pill.classList.add("active");
+            }
+
+            // Execute simulated mutation
+            step.action(activeCanvasSpec);
+            updateTreeDisplay();
+
+            // Mark previous as completed
+            if (currentStepIndex > 0) {
+                const prevPill = document.getElementById(`pill-step-${currentStepIndex - 1}`);
+                if (prevPill) {
+                    prevPill.classList.remove("active");
+                    prevPill.classList.add("completed");
+                }
+            }
+
+            document.getElementById("stepDetails").innerHTML = `
+                <div class="mb-1 text-dark fw-bold">${step.name}</div>
+                <div class="mb-2"><span class="badge bg-primary">${step.dim}</span> <span class="badge bg-light text-dark font-monospace border">${step.key}</span></div>
+                <p class="mb-0 text-muted">${step.desc}</p>
+            `;
+
+            document.getElementById("simStatus").className = "badge bg-primary";
+            document.getElementById("simStatus").innerText = `Step ${currentStepIndex + 1} of ${comp.steps.length} executed`;
+
+            if (currentStepIndex + 1 === comp.steps.length) {
+                setTimeout(() => {
+                    if (pill) {
+                        pill.classList.remove("active");
+                        pill.classList.add("completed");
+                    }
+                    document.getElementById("simStatus").className = "badge bg-success";
+                    document.getElementById("simStatus").innerText = "Pipeline Finished Successfully!";
+                    triggerConfetti();
+                }, 400);
+            }
+        }
+
+        function runAllSteps() {
+            const comp = components[currentComponent];
+            while (currentStepIndex + 1 < comp.steps.length) {
+                runNextStep();
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener("DOMContentLoaded", () => {
+            loadComponentSteps();
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
