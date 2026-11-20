@@ -1,6 +1,6 @@
 {
   "name": "json-renderers-run-instructions-steps",
-  "version": "1.3.1",
+  "version": "1.4.2",
   "description": "Sequential blueprint instruction step runner for JSON renderers",
   "type": "module",
   "main": "src/index.js",
@@ -35,6 +35,7 @@
   "license": "MIT",
   "homepage": "https://keshavsoft.github.io/json-renderers-run-instructions-steps/",
   "dependencies": {
+    "declarative-instructions": "file:../declarative-instructions",
     "json-transformer-funcs-one-dimension": "^1.9.9",
     "json-transformer-funcs-primitive": "^1.9.3",
     "json-transformer-funcs-two-dimensions": "file:../json-transformer-funcs-two-dimensions",
