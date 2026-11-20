@@ -4,21 +4,40 @@
   "description": "Sequential blueprint instruction step runner for JSON renderers",
   "type": "module",
   "main": "src/index.js",
+  "module": "src/index.js",
   "exports": {
-    ".": "./src/index.js"
+    ".": {
+      "import": "./src/index.js",
+      "default": "./src/index.js"
+    }
   },
   "files": [
     "src",
     "README.md"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keshavsoft/json-renderers-run-instructions-steps.git"
+  },
   "scripts": {
     "test": "node --test",
     "build": "npx @keshavsoft/build-cli"
   },
+  "keywords": [
+    "json-renderers",
+    "instructions",
+    "steps",
+    "orchestrator",
+    "declarative-ui",
+    "two-dimensions"
+  ],
+  "author": "KeshavSoft",
+  "license": "MIT",
+  "homepage": "https://keshavsoft.github.io/json-renderers-run-instructions-steps/",
   "dependencies": {
     "json-transformer-funcs-one-dimension": "^1.9.9",
     "json-transformer-funcs-primitive": "^1.9.3",
-    "json-transformer-funcs-two-dimensions": "^1.9.1",
+    "json-transformer-funcs-two-dimensions": "file:../json-transformer-funcs-two-dimensions",
     "json-write-path": "^1.6.1",
     "jsonpathly": "^4.0.0",
     "spec-repo": "^1.19.2"
