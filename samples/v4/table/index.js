@@ -1,12 +1,15 @@
 import columns from "../common/columns.json" with { type: "json" };
 import data from "../common/data.json" with { type: "json" };
-import runInstructions from "../../src/v4/index.js";
-import { spec } from "spec-repo";
+import "../../../docs/dist/v4/min.js";
+// import { spec } from "spec-repo";
 
 const targetHtmlId = "dom-render-container";
 
 const start = () => {
     try {
+        const localInstructions = window.ks.declarative.definitions.data.table.simple.instructions;
+        const localBaseFromSpec = window.ks.declarative.definitions.data.table.simple.baseFromSpec;
+
         const base = structuredClone(spec.tableSimple);
         const result = runInstructions({
             instructions: ["buildColgroup", "buildHeader", "buildBody"],
