@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Guide & Reference | json-renderers-run-instructions-steps</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        :root {
+            --font-main: 'Plus Jakarta Sans', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --primary: #4f46e5;
+            --text-title: #0f172a;
+            --text-body: #334155;
+            --border: #e2e8f0;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: var(--text-body);
+            font-family: var(--font-main);
+            line-height: 1.65;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        .spotlight-follower {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .page-header {
+            padding: 4.5rem 0 3rem;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .api-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.25rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            transition: all 0.25s ease;
+        }
+
+        .api-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px -10px rgba(79, 70, 229, 0.12);
+            border-color: #cbd5e1;
+        }
+
+        .code-box {
+            background: #0f172a;
+            color: #f1f5f9;
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            overflow-x: auto;
+        }
+
+        .param-table th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+        }
+
+        footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 3rem 0;
+            margin-top: 5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="spotlight-follower" id="spotlight"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
+                <i class="bi bi-diagram-3-fill text-primary fs-4"></i>
+                <span class="text-dark fw-bold">json-renderers-run-instructions-steps</span>
+            </a>
+            <div class="collapse navbar-collapse" id="navContent">
+                <ul class="navbar-nav ms-auto align-items-center gap-2">
+                    <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="./the-story.html">The Story</a></li>
+                    <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="./architecture.html">Architecture</a></li>
+                    <li class="nav-item"><a class="nav-link fw-semibold text-primary active" href="./api-guide.html">API Guide</a></li>
+                    <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="./samples-showcase.html">Samples</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="page-header text-center">
+        <div class="container">
+            <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold mb-2">Documentation & Reference</span>
+            <h1 class="display-5 fw-bold text-dark">API Guide & Reference</h1>
+            <p class="lead text-secondary mx-auto mb-0" style="max-width: 720px;">
+                Complete specifications for <code>runInstructions</code>, <code>executeStep</code>, configuration options, and state contracts.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="container py-5" style="max-width: 950px;">
+        <!-- runInstructions -->
+        <div class="api-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h3 class="fw-bold text-dark mb-0 font-monospace text-primary">runInstructions(options)</h3>
+                <span class="badge bg-success-subtle text-success fs-6">Default Export</span>
+            </div>
+            <p class="text-secondary">
+                Executes an array of declarative blueprint instruction keys sequentially on a provided base canvas using the supplied data.
+            </p>
+
+            <h6 class="fw-bold text-dark mt-4">Signature</h6>
+            <div class="code-box mb-3">
+<pre><code>runInstructions({
+    instructions: string[],
+    base: object,
+    data: object,
+    showLog?: boolean
+}): object</code></pre>
+            </div>
+
+            <h6 class="fw-bold text-dark mt-4">Parameters</h6>
+            <div class="table-responsive">
+                <table class="table table-bordered param-table small">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Required</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>instructions</code></td>
+                            <td><code>string[]</code></td>
+                            <td>Yes</td>
+                            <td>Array of instruction keys defined in <code>declarative-instructions</code> (e.g. <code>["buildColgroup", "buildHeader", "buildBody"]</code>).</td>
+                        </tr>
+                        <tr>
+                            <td><code>base</code></td>
+                            <td><code>object</code></td>
+                            <td>Yes</td>
+                            <td>The target canvas AST node (e.g., from <code>spec.tableSimple</code>, <code>spec.selectBase</code>, <code>spec.formSimple</code>) that will be mutated in place.</td>
+                        </tr>
+                        <tr>
+                            <td><code>data</code></td>
+                            <td><code>object</code></td>
+                            <td>Yes</td>
+                            <td>Input data bag containing <code>columns</code> array and/or <code>data</code> rows array.</td>
+                        </tr>
+                        <tr>
+                            <td><code>showLog</code></td>
+                            <td><code>boolean</code></td>
+                            <td>No</td>
+                            <td>When set to <code>true</code>, outputs debugging info for each step execution to console. Default: <code>false</code>.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h6 class="fw-bold text-dark mt-4">Return Value</h6>
+            <p class="small text-muted mb-0">
+                Returns the mutated <code>base</code> specification object containing the complete AST tree with all generated children and attributes.
+            </p>
+        </div>
+
+        <!-- executeStep -->
+        <div class="api-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h3 class="fw-bold text-dark mb-0 font-monospace text-primary">executeStep(key, state, showLog)</h3>
+                <span class="badge bg-primary-subtle text-primary fs-6">Named Export</span>
+            </div>
+            <p class="text-secondary">
+                Executes a single instruction step against the state context. Useful for step-by-step debugging, intermediate verification, or custom pipeline runners.
+            </p>
+
+            <h6 class="fw-bold text-dark mt-4">Signature</h6>
+            <div class="code-box mb-3">
+<pre><code>executeStep(
+    key: string,
+    state: { base: object, data: object },
+    showLog: boolean = false
+): object | any[]</code></pre>
+            </div>
+
+            <h6 class="fw-bold text-dark mt-4">Parameters</h6>
+            <div class="table-responsive">
+                <table class="table table-bordered param-table small">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Required</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>key</code></td>
+                            <td><code>string</code></td>
+                            <td>Yes</td>
+                            <td>The exact blueprint key name from <code>declarative-instructions</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>state</code></td>
+                            <td><code>object</code></td>
+                            <td>Yes</td>
+                            <td>An object holding references to <code>{ base, data }</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>showLog</code></td>
+                            <td><code>boolean</code></td>
+                            <td>No</td>
+                            <td>Enables console logging. Default: <code>false</code>.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h6 class="fw-bold text-dark mt-4">Return Value</h6>
+            <p class="small text-muted mb-0">
+                Returns the freshly generated subtree node(s) computed by the dimensional transformer function for that step.
+            </p>
+        </div>
+
+        <!-- Helpers -->
+        <div class="api-card">
+            <h3 class="fw-bold text-dark mb-3">Internal Helper Functions</h3>
+            <p class="text-secondary small">
+                Exported from <code>src/v4/helpers.js</code>:
+            </p>
+            <div class="mb-4">
+                <h6 class="fw-bold text-dark font-monospace">resolveSource(sourcePath, state)</h6>
+                <p class="small text-muted">
+                    Resolves the root or nested data subset from <code>state</code> using either <code>sourcePath.jsonPath</code> via <code>jsonpathly</code> or direct <code>sourcePath.filePath</code> traversal.
+                </p>
+            </div>
+            <div>
+                <h6 class="fw-bold text-dark font-monospace">writeResult(state, destinationPath, result, showLog)</h6>
+                <p class="small text-muted">
+                    Writes the calculated result spec directly to <code>destinationPath</code> on <code>state</code> using <code>json-write-path</code>. Safely skips when the destination container is not present.
+                </p>
+            </div>
+        </div>
+
+        <!-- TypeScript definitions -->
+        <div class="api-card">
+            <h3 class="fw-bold text-dark mb-3">TypeScript Interfaces</h3>
+            <div class="code-box">
+<pre><code><span class="text-warning">export interface</span> StepRunnerOptions {
+    instructions: string[];
+    base: Record&lt;string, any&gt;;
+    data: {
+        columns?: Array&lt;Record&lt;string, any&gt;&gt;;
+        data?: Array&lt;Record&lt;string, any&gt;&gt;;
+        [key: string]: any;
+    };
+    showLog?: boolean;
+}
+
+<span class="text-warning">export function</span> runInstructions(options: StepRunnerOptions): Record&lt;string, any&gt;;
+<span class="text-warning">export function</span> executeStep(key: string, state: Record&lt;string, any&gt;, showLog?: boolean): any;</code></pre>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center small">
+            <p class="mb-1">&copy; 2026 KeshavSoft. Released under the MIT License.</p>
+            <a href="../index.html" class="text-decoration-none text-light me-3">Home</a>
+            <a href="./the-story.html" class="text-decoration-none text-light me-3">The Story</a>
+            <a href="./architecture.html" class="text-decoration-none text-light me-3">Architecture</a>
+            <a href="./samples-showcase.html" class="text-decoration-none text-light">Samples</a>
+        </div>
+    </footer>
+
+    <script>
+        const spotlight = document.getElementById('spotlight');
+        window.addEventListener('mousemove', (e) => {
+            spotlight.style.left = e.clientX + 'px';
+            spotlight.style.top = e.clientY + 'px';
+        });
+    </script>
+</body>
+
+</html>
