@@ -21,39 +21,23 @@
 
 <body>
     <div class="studio-app">
-        <!-- Top Bar Header Section (Unchanged) -->
+        <!-- Top Bar Header Section -->
         <header class="studio-header">
-            <!-- Left: Brand & File Operations -->
+            <!-- Left: Brand & Docs Navigation -->
             <div class="header-left">
                 <a href="../../index.html" class="brand-link" title="Back to Docs">
                     <i class="bi bi-cpu-fill brand-icon"></i>
                     <span>json-renderers-run-instructions-steps</span>
                     <span class="version-pill">v1</span>
                 </a>
-
-                <div class="header-divider"></div>
-
-                <!-- File Button (Click or Ctrl+O) -->
-                <button id="openFileBtn" type="button" class="btn-file" title="Open JSON file from disk (Ctrl+O)">
-                    <i class="bi bi-folder2-open"></i>
-                    <span>File</span>
-                </button>
-                <input type="file" id="fileInput" style="display: none;" accept=".json,.js,.txt,application/json">
             </div>
 
-            <!-- Right: Active File Pill, Status & Navigation -->
+            <!-- Right: Status & Documentation Link -->
             <div class="header-right">
                 <!-- Status Notification -->
                 <span id="statusPill" class="status-pill success hidden">
                     <i class="bi bi-check2"></i> <span id="statusText">Loaded ✓</span>
                 </span>
-
-                <!-- Active File Pill -->
-                <div class="active-file-pill">
-                    <i class="bi bi-filetype-json"></i>
-                    <span class="active-file-label">Active:</span>
-                    <span id="fileName" class="active-file-name">instructions.json</span>
-                </div>
 
                 <div class="header-divider"></div>
 
@@ -64,10 +48,49 @@
             </div>
         </header>
 
-        <!-- Main Workspace Section: Split 50/50 for Two Monaco IDEs -->
+        <!-- Main Workspace Section: Collection of Two Self-Contained Studio Panes -->
         <main class="studio-workspace">
-            <div id="editorLeft" class="editor-pane"></div>
-            <div id="editorRight" class="editor-pane"></div>
+            <!-- Pane 1: Left Editor with dedicated File Selector Header -->
+            <section class="studio-pane" id="paneLeft">
+                <div class="pane-header">
+                    <div class="pane-header-left">
+                        <span class="pane-badge">Editor 1</span>
+                        <button id="openFileBtnLeft" type="button" class="btn-pane-file" title="Open JSON file for Editor 1">
+                            <i class="bi bi-folder2-open"></i>
+                            <span>Select File</span>
+                        </button>
+                        <input type="file" id="fileInputLeft" style="display: none;" accept=".json,.js,.txt,application/json">
+                    </div>
+                    <div class="pane-header-right">
+                        <span class="pane-file-pill">
+                            <i class="bi bi-filetype-json"></i>
+                            <span id="fileNameLeft" class="pane-file-name">instructions.json</span>
+                        </span>
+                    </div>
+                </div>
+                <div id="editorLeft" class="editor-pane-body"></div>
+            </section>
+
+            <!-- Pane 2: Right Editor with dedicated File Selector Header -->
+            <section class="studio-pane" id="paneRight">
+                <div class="pane-header">
+                    <div class="pane-header-left">
+                        <span class="pane-badge">Editor 2</span>
+                        <button id="openFileBtnRight" type="button" class="btn-pane-file" title="Open JSON file for Editor 2">
+                            <i class="bi bi-folder2-open"></i>
+                            <span>Select File</span>
+                        </button>
+                        <input type="file" id="fileInputRight" style="display: none;" accept=".json,.js,.txt,application/json">
+                    </div>
+                    <div class="pane-header-right">
+                        <span class="pane-file-pill">
+                            <i class="bi bi-filetype-json"></i>
+                            <span id="fileNameRight" class="pane-file-name">data.json</span>
+                        </span>
+                    </div>
+                </div>
+                <div id="editorRight" class="editor-pane-body"></div>
+            </section>
         </main>
 
         <!-- Footer Status Section -->
@@ -78,7 +101,7 @@
                     <span>Monaco Split 50/50 Studio</span>
                 </span>
                 <span>|</span>
-                <span id="fileMeta">2 Editors (50/50)</span>
+                <span id="fileMeta">2 Panes (Independent File Selectors)</span>
             </div>
             <div class="footer-right">
                 <span id="cursorPos">Ln 1, Col 1</span>

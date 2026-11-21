@@ -4,7 +4,8 @@ export const state = {
     editorLeft: null,
     editorRight: null,
     activeEditor: 'left',
-    fileName: 'instructions.json',
+    fileNameLeft: 'instructions.json',
+    fileNameRight: 'data.json',
     contentLeft: '',
     contentRight: ''
 };
@@ -32,6 +33,21 @@ export async function loadInitialInstructions() {
             "buildColgroup": { "type": "single", "narration": "Build column widths" },
             "buildHeader": { "type": "single", "narration": "Build table header" },
             "buildBody": { "type": "rowOnColumn", "narration": "Build table body" }
+        });
+    }
+}
+
+export async function loadInitialData() {
+    try {
+        const res = await fetch('./data/data.json');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        return pretty(data);
+    } catch (err) {
+        console.warn('Fallback: could not fetch local data.json', err);
+        return pretty({
+            "info": "Monaco Right Editor (Pane 2)",
+            "status": "ready"
         });
     }
 }

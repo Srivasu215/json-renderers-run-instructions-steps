@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Monaco Double V1 — Two-Pane 50/50 Studio | json-renderers-run-instructions-steps</title>
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Monaco Editor Stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/editor/editor.main.min.css">
+    
+    <!-- CSS Divided as per HTML Controls -->
+    <link rel="stylesheet" href="./css/base.css">
+    <link rel="stylesheet" href="./css/header.css">
+    <link rel="stylesheet" href="./css/workspace.css">
+    <link rel="stylesheet" href="./css/footer.css">
+</head>
+
+<body>
+    <div class="studio-app">
+        <!-- Top Bar Header Section -->
+        <header class="studio-header">
+            <!-- Left: Brand & Docs Navigation -->
+            <div class="header-left">
+                <a href="../../index.html" class="brand-link" title="Back to Docs">
+                    <i class="bi bi-cpu-fill brand-icon"></i>
+                    <span>json-renderers-run-instructions-steps</span>
+                    <span class="version-pill">v1</span>
+                </a>
+            </div>
+
+            <!-- Right: Status & Documentation Link -->
+            <div class="header-right">
+                <!-- Status Notification -->
+                <span id="statusPill" class="status-pill success hidden">
+                    <i class="bi bi-check2"></i> <span id="statusText">Loaded ✓</span>
+                </span>
+
+                <div class="header-divider"></div>
+
+                <a href="../../index.html" class="docs-link" title="Documentation Hub">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Docs</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Workspace Section: Collection of Two Self-Contained Studio Panes -->
+        <main class="studio-workspace">
+            <!-- Pane 1: Left Editor with dedicated File Selector Header -->
+            <section class="studio-pane" id="paneLeft">
+                <div class="pane-header">
+                    <div class="pane-header-left">
+                        <span class="pane-badge">Editor 1</span>
+                        <button id="openFileBtnLeft" type="button" class="btn-pane-file" title="Open JSON file for Editor 1">
+                            <i class="bi bi-folder2-open"></i>
+                            <span>Select File</span>
+                        </button>
+                        <input type="file" id="fileInputLeft" style="display: none;" accept=".json,.js,.txt,application/json">
+                    </div>
+                    <div class="pane-header-right">
+                        <span class="pane-file-pill">
+                            <i class="bi bi-filetype-json"></i>
+                            <span id="fileNameLeft" class="pane-file-name">instructions.json</span>
+                        </span>
+                    </div>
+                </div>
+                <div id="editorLeft" class="editor-pane-body"></div>
+            </section>
+
+            <!-- Pane 2: Right Editor with dedicated File Selector Header -->
+            <section class="studio-pane" id="paneRight">
+                <div class="pane-header">
+                    <div class="pane-header-left">
+                        <span class="pane-badge">Editor 2</span>
+                        <button id="openFileBtnRight" type="button" class="btn-pane-file" title="Open JSON file for Editor 2">
+                            <i class="bi bi-folder2-open"></i>
+                            <span>Select File</span>
+                        </button>
+                        <input type="file" id="fileInputRight" style="display: none;" accept=".json,.js,.txt,application/json">
+                    </div>
+                    <div class="pane-header-right">
+                        <span class="pane-file-pill">
+                            <i class="bi bi-filetype-json"></i>
+                            <span id="fileNameRight" class="pane-file-name">data.json</span>
+                        </span>
+                    </div>
+                </div>
+                <div id="editorRight" class="editor-pane-body"></div>
+            </section>
+        </main>
+
+        <!-- Footer Status Section -->
+        <footer class="studio-footer">
+            <div class="footer-left">
+                <span class="footer-brand">
+                    <i class="bi bi-layout-split"></i>
+                    <span>Monaco Split 50/50 Studio</span>
+                </span>
+                <span>|</span>
+                <span id="fileMeta">2 Panes (Independent File Selectors)</span>
+            </div>
+            <div class="footer-right">
+                <span id="cursorPos">Ln 1, Col 1</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Monaco AMD Loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
+    
+    <!-- Functional Controller -->
+    <script type="module" src="./js/index.js"></script>
+</body>
+
+</html>

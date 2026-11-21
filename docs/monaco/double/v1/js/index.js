@@ -1,4 +1,4 @@
-import { $, state, pretty, loadInitialInstructions, setStatus } from './state.js';
+import { $, state, pretty, loadInitialInstructions, loadInitialData, setStatus } from './state.js';
 
 async function initMonaco() {
     return new Promise((resolve, reject) => {
@@ -12,17 +12,48 @@ async function initMonaco() {
     });
 }
 
+/**
+ * Wire a self-contained Studio Pane component:
+ * Connects a File Open button + input to its dedicated Monaco editor and active file pill.
+ */
+function wirePane({ paneId, editor, fileBtnId, fileInputId, fileNameId, onLoaded }) {
+    const fileBtn = $(fileBtnId);
+    const fileInput = $(fileInputId);
+    const fileNameEl = $(fileNameId);
+
+    if (!fileBtn || !fileInput) return;
+
+    fileBtn.addEventListener('click', () => {
+        fileInput.value = '';
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const text = ev.target.result;
+            const formatted = pretty(text);
+            editor.setValue(formatted);
+
+            if (fileNameEl) fileNameEl.textContent = file.name;
+            if (onLoaded) onLoaded(file.name, formatted);
+            setStatus(`Loaded: ${file.name}`);
+        };
+        reader.readAsText(file);
+    });
+}
+
 async function start() {
     try {
         // 1. Initialize Monaco Editor Core
         const monaco = await initMonaco();
 
-        // 2. Load Default Content
+        // 2. Load Default Content for Both Panes
         state.contentLeft = await loadInitialInstructions();
-        state.contentRight = pretty({
-            "info": "Monaco Right Editor (50/50)",
-            "status": "ready"
-        });
+        state.contentRight = await loadInitialData();
 
         const editorConfig = {
             language: 'json',
@@ -38,7 +69,7 @@ async function start() {
             padding: { top: 10 }
         };
 
-        // 3. Create Left Monaco Editor Instance
+        // 3. Create Left Monaco Editor Instance (Pane 1)
         const containerLeft = $('editorLeft');
         const editorLeft = monaco.editor.create(containerLeft, {
             ...editorConfig,
@@ -46,7 +77,7 @@ async function start() {
         });
         state.editorLeft = editorLeft;
 
-        // 4. Create Right Monaco Editor Instance
+        // 4. Create Right Monaco Editor Instance (Pane 2)
         const containerRight = $('editorRight');
         const editorRight = monaco.editor.create(containerRight, {
             ...editorConfig,
@@ -54,7 +85,32 @@ async function start() {
         });
         state.editorRight = editorRight;
 
-        // Track live edits
+        // 5. Wire Self-Contained Pane File Selectors
+        wirePane({
+            paneId: 'paneLeft',
+            editor: editorLeft,
+            fileBtnId: 'openFileBtnLeft',
+            fileInputId: 'fileInputLeft',
+            fileNameId: 'fileNameLeft',
+            onLoaded: (name, val) => {
+                state.fileNameLeft = name;
+                state.contentLeft = val;
+            }
+        });
+
+        wirePane({
+            paneId: 'paneRight',
+            editor: editorRight,
+            fileBtnId: 'openFileBtnRight',
+            fileInputId: 'fileInputRight',
+            fileNameId: 'fileNameRight',
+            onLoaded: (name, val) => {
+                state.fileNameRight = name;
+                state.contentRight = val;
+            }
+        });
+
+        // 6. Track Content Changes
         editorLeft.onDidChangeModelContent(() => {
             state.contentLeft = editorLeft.getValue();
         });
@@ -62,7 +118,7 @@ async function start() {
             state.contentRight = editorRight.getValue();
         });
 
-        // 5. Cursor Position tracking on active editor
+        // 7. Focus & Cursor Position Tracking
         const updateCursor = (ed) => {
             const pos = ed.getPosition();
             const el = $('cursorPos');
@@ -83,52 +139,6 @@ async function start() {
         });
         editorRight.onDidChangeCursorPosition(() => {
             if (state.activeEditor === 'right') updateCursor(editorRight);
-        });
-
-        // 6. File Picker Wiring (Loads into currently active editor)
-        const fileInput = $('fileInput');
-        const openFileBtn = $('openFileBtn');
-
-        if (openFileBtn && fileInput) {
-            openFileBtn.addEventListener('click', () => {
-                fileInput.value = '';
-                fileInput.click();
-            });
-
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    const text = ev.target.result;
-                    const formatted = pretty(text);
-
-                    const targetEditor = state.activeEditor === 'right' ? editorRight : editorLeft;
-                    targetEditor.setValue(formatted);
-
-                    state.fileName = file.name;
-                    const fn = $('fileName');
-                    if (fn) fn.textContent = file.name;
-
-                    setStatus(`Loaded: ${file.name}`);
-                };
-                reader.readAsText(file);
-            });
-        }
-
-        // Ctrl+O / Cmd+O Shortcut
-        editorLeft.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyO, () => {
-            if (fileInput) {
-                fileInput.value = '';
-                fileInput.click();
-            }
-        });
-        editorRight.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyO, () => {
-            if (fileInput) {
-                fileInput.value = '';
-                fileInput.click();
-            }
         });
 
         setStatus('Ready ✓');
