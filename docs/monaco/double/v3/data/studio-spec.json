@@ -39,7 +39,58 @@
                   "attributes": {
                     "class": "version-pill"
                   },
-                  "textContent": "v1"
+                  "textContent": "v3"
+                }
+              ]
+            },
+            {
+              "tagName": "div",
+              "attributes": {
+                "class": "header-divider"
+              }
+            },
+            {
+              "tagName": "div",
+              "attributes": {
+                "class": "layout-switcher"
+              },
+              "children": [
+                {
+                  "tagName": "span",
+                  "attributes": {
+                    "class": "layout-switcher-label"
+                  },
+                  "textContent": "Panes:"
+                },
+                {
+                  "tagName": "button",
+                  "attributes": {
+                    "type": "button",
+                    "class": "btn-layout-mode",
+                    "data-panes": "1",
+                    "title": "Single Pane (100%)"
+                  },
+                  "textContent": "1"
+                },
+                {
+                  "tagName": "button",
+                  "attributes": {
+                    "type": "button",
+                    "class": "btn-layout-mode active",
+                    "data-panes": "2",
+                    "title": "Double Pane (50/50)"
+                  },
+                  "textContent": "2"
+                },
+                {
+                  "tagName": "button",
+                  "attributes": {
+                    "type": "button",
+                    "class": "btn-layout-mode",
+                    "data-panes": "3",
+                    "title": "Triple Pane (33/33/33)"
+                  },
+                  "textContent": "3"
                 }
               ]
             }
@@ -106,14 +157,16 @@
     {
       "tagName": "main",
       "attributes": {
-        "class": "studio-workspace"
+        "class": "studio-workspace",
+        "id": "studioWorkspace",
+        "data-panes": "2"
       },
       "children": [
         {
           "tagName": "section",
           "attributes": {
             "class": "studio-pane",
-            "id": "paneLeft"
+            "id": "pane1"
           },
           "children": [
             {
@@ -138,7 +191,7 @@
                     {
                       "tagName": "button",
                       "attributes": {
-                        "id": "openFileBtnLeft",
+                        "id": "openFileBtn1",
                         "type": "button",
                         "class": "btn-pane-file",
                         "title": "Open JSON file for Editor 1"
@@ -160,7 +213,7 @@
                       "tagName": "input",
                       "attributes": {
                         "type": "file",
-                        "id": "fileInputLeft",
+                        "id": "fileInput1",
                         "style": "display: none;",
                         "accept": ".json,.js,.txt,application/json"
                       }
@@ -188,7 +241,7 @@
                         {
                           "tagName": "span",
                           "attributes": {
-                            "id": "fileNameLeft",
+                            "id": "fileName1",
                             "class": "pane-file-name"
                           },
                           "textContent": "instructions.json"
@@ -202,7 +255,7 @@
             {
               "tagName": "div",
               "attributes": {
-                "id": "editorLeft",
+                "id": "editor1",
                 "class": "editor-pane-body"
               }
             }
@@ -212,7 +265,7 @@
           "tagName": "section",
           "attributes": {
             "class": "studio-pane",
-            "id": "paneRight"
+            "id": "pane2"
           },
           "children": [
             {
@@ -237,7 +290,7 @@
                     {
                       "tagName": "button",
                       "attributes": {
-                        "id": "openFileBtnRight",
+                        "id": "openFileBtn2",
                         "type": "button",
                         "class": "btn-pane-file",
                         "title": "Open JSON file for Editor 2"
@@ -259,7 +312,7 @@
                       "tagName": "input",
                       "attributes": {
                         "type": "file",
-                        "id": "fileInputRight",
+                        "id": "fileInput2",
                         "style": "display: none;",
                         "accept": ".json,.js,.txt,application/json"
                       }
@@ -287,7 +340,7 @@
                         {
                           "tagName": "span",
                           "attributes": {
-                            "id": "fileNameRight",
+                            "id": "fileName2",
                             "class": "pane-file-name"
                           },
                           "textContent": "data.json"
@@ -301,7 +354,106 @@
             {
               "tagName": "div",
               "attributes": {
-                "id": "editorRight",
+                "id": "editor2",
+                "class": "editor-pane-body"
+              }
+            }
+          ]
+        },
+        {
+          "tagName": "section",
+          "attributes": {
+            "class": "studio-pane",
+            "id": "pane3"
+          },
+          "children": [
+            {
+              "tagName": "div",
+              "attributes": {
+                "class": "pane-header"
+              },
+              "children": [
+                {
+                  "tagName": "div",
+                  "attributes": {
+                    "class": "pane-header-left"
+                  },
+                  "children": [
+                    {
+                      "tagName": "span",
+                      "attributes": {
+                        "class": "pane-badge"
+                      },
+                      "textContent": "Editor 3"
+                    },
+                    {
+                      "tagName": "button",
+                      "attributes": {
+                        "id": "openFileBtn3",
+                        "type": "button",
+                        "class": "btn-pane-file",
+                        "title": "Open JSON file for Editor 3"
+                      },
+                      "children": [
+                        {
+                          "tagName": "i",
+                          "attributes": {
+                            "class": "bi bi-folder2-open"
+                          }
+                        },
+                        {
+                          "tagName": "span",
+                          "textContent": "Select File"
+                        }
+                      ]
+                    },
+                    {
+                      "tagName": "input",
+                      "attributes": {
+                        "type": "file",
+                        "id": "fileInput3",
+                        "style": "display: none;",
+                        "accept": ".json,.js,.txt,application/json"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "tagName": "div",
+                  "attributes": {
+                    "class": "pane-header-right"
+                  },
+                  "children": [
+                    {
+                      "tagName": "span",
+                      "attributes": {
+                        "class": "pane-file-pill"
+                      },
+                      "children": [
+                        {
+                          "tagName": "i",
+                          "attributes": {
+                            "class": "bi bi-filetype-json"
+                          }
+                        },
+                        {
+                          "tagName": "span",
+                          "attributes": {
+                            "id": "fileName3",
+                            "class": "pane-file-name"
+                          },
+                          "textContent": "columns.json"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tagName": "div",
+              "attributes": {
+                "id": "editor3",
                 "class": "editor-pane-body"
               }
             }
@@ -335,7 +487,7 @@
                 },
                 {
                   "tagName": "span",
-                  "textContent": "Monaco Split 50/50 Studio"
+                  "textContent": "Monaco Dynamic Studio"
                 }
               ]
             },
@@ -346,9 +498,9 @@
             {
               "tagName": "span",
               "attributes": {
-                "id": "fileMeta"
+                "id": "layoutMeta"
               },
-              "textContent": "2 Panes (Independent File Selectors)"
+              "textContent": "2 Panes Active"
             }
           ]
         },

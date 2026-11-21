@@ -4,9 +4,35 @@
     height: calc(100vh - 44px - 24px);
     background-color: var(--border-color);
     display: grid;
-    grid-template-columns: 1fr 1fr;
     gap: 1px;
     overflow: hidden;
+}
+
+/* 1 Pane: Full-width 100% */
+.studio-workspace[data-panes="1"] {
+    grid-template-columns: 1fr;
+}
+.studio-workspace[data-panes="1"] #pane2,
+.studio-workspace[data-panes="1"] #pane3 {
+    display: none !important;
+}
+
+/* 2 Panes: 50% / 50% */
+.studio-workspace[data-panes="2"] {
+    grid-template-columns: 1fr 1fr;
+}
+.studio-workspace[data-panes="2"] #pane3 {
+    display: none !important;
+}
+
+/* 3 Panes: 33.3% / 33.3% / 33.3% */
+.studio-workspace[data-panes="3"] {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* Fallback when data-panes is unset */
+.studio-workspace:not([data-panes]) {
+    grid-template-columns: 1fr 1fr;
 }
 
 /* Individual Studio Pane */
@@ -17,6 +43,7 @@
     background-color: var(--bg-editor);
     overflow: hidden;
     position: relative;
+    min-width: 0;
 }
 
 /* Mini Header for Each Pane */
@@ -27,7 +54,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 12px;
+    padding: 0 10px;
     flex-shrink: 0;
     user-select: none;
 }
@@ -35,7 +62,8 @@
 .pane-header-left, .pane-header-right {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    min-width: 0;
 }
 
 .pane-badge {
@@ -48,21 +76,23 @@
     border-radius: 4px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .btn-pane-file {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     background: #20242f;
     border: 1px solid var(--border-color);
     color: var(--text-primary);
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s ease;
+    white-space: nowrap;
 }
 
 .btn-pane-file:hover {
@@ -73,19 +103,22 @@
 
 .btn-pane-file i {
     color: var(--accent-blue);
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .pane-file-pill {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-size: 12px;
+    gap: 5px;
+    font-size: 11px;
     color: var(--text-secondary);
     background: rgba(255, 255, 255, 0.04);
-    padding: 3px 9px;
+    padding: 2px 8px;
     border-radius: 4px;
     border: 1px solid var(--border-subtle);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .pane-file-pill i {
@@ -95,7 +128,10 @@
 .pane-file-name {
     font-family: var(--font-mono);
     color: var(--text-primary);
-    font-size: 12px;
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Editor Body Container */

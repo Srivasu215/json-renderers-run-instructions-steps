@@ -1,13 +1,11 @@
 export const $ = (id) => document.getElementById(id);
 
 export const state = {
-    editorLeft: null,
-    editorRight: null,
-    activeEditor: 'left',
-    fileNameLeft: 'instructions.json',
-    fileNameRight: 'data.json',
-    contentLeft: '',
-    contentRight: ''
+    activePanesCount: 2,
+    editors: [null, null, null],
+    activeEditorIndex: 0,
+    fileNames: ['instructions.json', 'data.json', 'columns.json'],
+    contents: ['', '', '']
 };
 
 export const pretty = (v) => {
@@ -28,12 +26,8 @@ export async function loadInitialInstructions() {
         const data = await res.json();
         return pretty(data);
     } catch (err) {
-        console.warn('Fallback: could not fetch local instructions.json', err);
-        return pretty({
-            "buildColgroup": { "type": "single", "narration": "Build column widths" },
-            "buildHeader": { "type": "single", "narration": "Build table header" },
-            "buildBody": { "type": "rowOnColumn", "narration": "Build table body" }
-        });
+        console.warn('Fallback: instructions.json', err);
+        return pretty({ "buildHeader": { "type": "single", "narration": "Build table header" } });
     }
 }
 
@@ -44,11 +38,20 @@ export async function loadInitialData() {
         const data = await res.json();
         return pretty(data);
     } catch (err) {
-        console.warn('Fallback: could not fetch local data.json', err);
-        return pretty({
-            "info": "Monaco Right Editor (Pane 2)",
-            "status": "ready"
-        });
+        console.warn('Fallback: data.json', err);
+        return pretty([ { "itemName": "Demo Item", "category": "General" } ]);
+    }
+}
+
+export async function loadInitialColumns() {
+    try {
+        const res = await fetch('./data/columns.json');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        return pretty(data);
+    } catch (err) {
+        console.warn('Fallback: columns.json', err);
+        return pretty([ { "columnName": "itemName", "label": "Item Name" } ]);
     }
 }
 
