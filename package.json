@@ -35,7 +35,7 @@
   "homepage": "https://keshavsoft.github.io/json-renderers-run-instructions-steps/",
   "dependencies": {
     "declarative-instructions": "^1.2.1",
-    "declarative-spec": "file:../declarative-spec",
+    "declarative-spec": "^1.2.1",
     "json-transformer-funcs-one-dimension": "^1.9.9",
     "json-transformer-funcs-primitive": "^1.9.3",
     "json-transformer-funcs-two-dimensions": "^1.9.1",
