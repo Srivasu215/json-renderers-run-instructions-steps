@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Monaco Studio (2 Pane Static Project) | KeshavSoft</title>
+    
+    <!-- Auto-normalize trailing slash so relative paths ./css and ./js always resolve correctly -->
+    <script>
+        if (!location.pathname.endsWith('/') && !location.pathname.endsWith('.html')) {
+            location.replace(location.pathname + '/' + location.search + location.hash);
+        }
+    </script>
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Monaco Editor Stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/editor/editor.main.min.css">
+    
+    <!-- Modular Control-Scoped CSS -->
+    <link rel="stylesheet" href="./css/base.css">
+    <link rel="stylesheet" href="./css/header.css">
+    <link rel="stylesheet" href="./css/workspace.css">
+    <link rel="stylesheet" href="./css/footer.css">
+</head>
+
+<body>
+    <div class="studio-app">
+        <!-- Top Bar Header Section -->
+        <header class="studio-header">
+            <div class="header-left">
+                <a href="#" class="brand-link" title="Monaco Studio">
+                    <i class="bi bi-cpu-fill brand-icon"></i>
+                    <span>json-renderers-run-instructions-steps</span>
+                    <span class="version-pill">v1</span>
+                </a>
+            </div>
+            <div class="header-right">
+                <span id="statusPill" class="status-pill success hidden">
+                    <i class="bi bi-check2"></i> <span id="statusText">Loaded ✓</span>
+                </span>
+                <div class="header-divider"></div>
+                <span class="pane-file-pill">
+                    <i class="bi bi-layout-split"></i>
+                    <span>2 Panes Static Layout</span>
+                </span>
+            </div>
+        </header>
+
+        <!-- Main Workspace Section: 2 Static Panes -->
+        <main class="studio-workspace" data-panes="2">
+            <section class="studio-pane" id="pane1">
+                <div class="pane-header">
+                    <div class="pane-header-left">
+                        <span class="pane-badge">Editor 1</span>
+                        <button id="openFileBtn1" type="button" class="btn-pane-file" title="Open JSON file for Editor 1">
+                            <i class="bi bi-folder2-open"></i>
+                            <span>Select File</span>
+                        </button>
+                        <input type="file" id="fileInput1" style="display: none;" accept=".json,.js,.txt,application/json">
+                    </div>
+                    <div class="pane-header-right">
+                        <span class="pane-file-pill">
+                            <i class="bi bi-filetype-json"></i>
+                            <span id="fileName1" class="pane-file-name">instructions.json</span>
+                        </span>
+                    </div>
+                </div>
+                <div id="editor1" class="editor-pane-body"></div>
+            </section>
+
+            <section class="studio-pane" id="pane2">
+                <div class="pane-header">
+                    <div class="pane-header-left">
+                        <span class="pane-badge">Editor 2</span>
+                        <button id="openFileBtn2" type="button" class="btn-pane-file" title="Open JSON file for Editor 2">
+                            <i class="bi bi-folder2-open"></i>
+                            <span>Select File</span>
+                        </button>
+                        <input type="file" id="fileInput2" style="display: none;" accept=".json,.js,.txt,application/json">
+                    </div>
+                    <div class="pane-header-right">
+                        <span class="pane-file-pill">
+                            <i class="bi bi-filetype-json"></i>
+                            <span id="fileName2" class="pane-file-name">data.json</span>
+                        </span>
+                    </div>
+                </div>
+                <div id="editor2" class="editor-pane-body"></div>
+            </section>
+        </main>
+
+        <footer class="studio-footer">
+            <div class="footer-left">
+                <span class="footer-brand">
+                    <i class="bi bi-braces-asterisk"></i>
+                    <span>JSON-Driven Assembled Studio</span>
+                </span>
+                <span>|</span>
+                <span id="layoutMeta">2 Panes Active</span>
+            </div>
+            <div class="footer-right">
+                <span id="cursorPos">Ln 1, Col 1</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Monaco AMD Loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
+    
+    <!-- Functional Controller -->
+    <script type="module" src="./js/index.js"></script>
+</body>
+
+</html>
