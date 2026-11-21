@@ -1,9 +1,12 @@
 export const $ = (id) => document.getElementById(id);
 
 export const state = {
-    editor: null,
+    editorLeft: null,
+    editorRight: null,
+    activeEditor: 'left',
     fileName: 'instructions.json',
-    content: ''
+    contentLeft: '',
+    contentRight: ''
 };
 
 export const pretty = (v) => {
@@ -24,7 +27,7 @@ export async function loadInitialInstructions() {
         const data = await res.json();
         return pretty(data);
     } catch (err) {
-        console.warn('Fallback: could not fetch local instructions.json, using default template', err);
+        console.warn('Fallback: could not fetch local instructions.json', err);
         return pretty({
             "buildColgroup": { "type": "single", "narration": "Build column widths" },
             "buildHeader": { "type": "single", "narration": "Build table header" },

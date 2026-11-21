@@ -17,41 +17,75 @@ async function start() {
         // 1. Initialize Monaco Editor Core
         const monaco = await initMonaco();
 
-        // 2. Load Default Instructions
-        state.content = await loadInitialInstructions();
+        // 2. Load Default Content
+        state.contentLeft = await loadInitialInstructions();
+        state.contentRight = pretty({
+            "info": "Monaco Right Editor (50/50)",
+            "status": "ready"
+        });
 
-        // 3. Create Monaco Editor Instance
-        const container = $('jsonEditor');
-        const editor = monaco.editor.create(container, {
-            value: state.content,
+        const editorConfig = {
             language: 'json',
             theme: 'vs-dark',
             automaticLayout: true,
             tabSize: 2,
             fontSize: 13,
             lineNumbers: 'on',
-            minimap: { enabled: true },
+            minimap: { enabled: false },
             scrollBeyondLastLine: false,
             cursorBlinking: 'smooth',
             renderLineHighlight: 'all',
             padding: { top: 10 }
-        });
+        };
 
-        state.editor = editor;
+        // 3. Create Left Monaco Editor Instance
+        const containerLeft = $('editorLeft');
+        const editorLeft = monaco.editor.create(containerLeft, {
+            ...editorConfig,
+            value: state.contentLeft
+        });
+        state.editorLeft = editorLeft;
+
+        // 4. Create Right Monaco Editor Instance
+        const containerRight = $('editorRight');
+        const editorRight = monaco.editor.create(containerRight, {
+            ...editorConfig,
+            value: state.contentRight
+        });
+        state.editorRight = editorRight;
 
         // Track live edits
-        editor.onDidChangeModelContent(() => {
-            state.content = editor.getValue();
+        editorLeft.onDidChangeModelContent(() => {
+            state.contentLeft = editorLeft.getValue();
+        });
+        editorRight.onDidChangeModelContent(() => {
+            state.contentRight = editorRight.getValue();
         });
 
-        // 4. Update Cursor Position in Footer
-        editor.onDidChangeCursorPosition((e) => {
-            const pos = e.position;
+        // 5. Cursor Position tracking on active editor
+        const updateCursor = (ed) => {
+            const pos = ed.getPosition();
             const el = $('cursorPos');
-            if (el) el.textContent = `Ln ${pos.lineNumber}, Col ${pos.column}`;
+            if (el && pos) el.textContent = `Ln ${pos.lineNumber}, Col ${pos.column}`;
+        };
+
+        editorLeft.onDidFocusEditorText(() => {
+            state.activeEditor = 'left';
+            updateCursor(editorLeft);
+        });
+        editorRight.onDidFocusEditorText(() => {
+            state.activeEditor = 'right';
+            updateCursor(editorRight);
         });
 
-        // 5. File Picker Wiring (Button Click + Ctrl/Cmd+O)
+        editorLeft.onDidChangeCursorPosition(() => {
+            if (state.activeEditor === 'left') updateCursor(editorLeft);
+        });
+        editorRight.onDidChangeCursorPosition(() => {
+            if (state.activeEditor === 'right') updateCursor(editorRight);
+        });
+
+        // 6. File Picker Wiring (Loads into currently active editor)
         const fileInput = $('fileInput');
         const openFileBtn = $('openFileBtn');
 
@@ -68,13 +102,12 @@ async function start() {
                 const reader = new FileReader();
                 reader.onload = (ev) => {
                     const text = ev.target.result;
-                    state.content = text;
-                    state.fileName = file.name;
-                    
-                    // Format if valid JSON
                     const formatted = pretty(text);
-                    editor.setValue(formatted);
 
+                    const targetEditor = state.activeEditor === 'right' ? editorRight : editorLeft;
+                    targetEditor.setValue(formatted);
+
+                    state.fileName = file.name;
                     const fn = $('fileName');
                     if (fn) fn.textContent = file.name;
 
@@ -85,17 +118,22 @@ async function start() {
         }
 
         // Ctrl+O / Cmd+O Shortcut
-        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyO, () => {
+        editorLeft.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyO, () => {
+            if (fileInput) {
+                fileInput.value = '';
+                fileInput.click();
+            }
+        });
+        editorRight.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyO, () => {
             if (fileInput) {
                 fileInput.value = '';
                 fileInput.click();
             }
         });
 
-        // Initial status
         setStatus('Ready ✓');
     } catch (err) {
-        console.error('Failed to initialize Monaco V1:', err);
+        console.error('Failed to initialize Monaco Double V1:', err);
     }
 }
 
