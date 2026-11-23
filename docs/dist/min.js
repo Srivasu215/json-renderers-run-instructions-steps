@@ -6951,7 +6951,7 @@ var Ae = /* @__PURE__ */ new Set([
 	}
 }, ln = {
 	name: "json-renderers-run-instructions",
-	version: "1.5.1"
+	version: "1.6.1"
 }, un = (e) => {
 	typeof globalThis < "u" && e && (globalThis.ks ??= {}, globalThis.ks.jsonRenderers ??= {}, globalThis.ks.jsonRenderers.runInstructions ??= {}, globalThis.ks.jsonRenderers.runInstructions.steps = {
 		meta: ln,
