@@ -6949,22 +6949,32 @@ var Ae = /* @__PURE__ */ new Set([
 			}]
 		}]
 	}
-}, ln = {
+}, ln = (e) => {
+	if (!e || typeof e != "object" || Array.isArray(e)) throw TypeError("Config must be an object");
+	let { baseKey: t, instructions: n } = e;
+	if (typeof t != "string" || !t.trim()) throw TypeError("baseKey must be a non-empty string");
+	if (!(t in cn)) throw Error(`baseKey "${t}" does not exist in declarative-spec`);
+	if (!Array.isArray(n)) throw TypeError("instructions must be an Array");
+	if (n.length === 0) throw Error("instructions cannot be empty");
+	for (let e = 0; e < n.length; e++) if (typeof n[e] != "string" || !n[e].trim()) throw TypeError(`instructions[${e}] must be a non-empty string`);
+	return !0;
+}, un = {
 	name: "json-renderers-run-instructions",
 	version: "1.6.1"
-}, un = (e) => {
+}, dn = (e) => {
 	typeof globalThis < "u" && e && (globalThis.ks ??= {}, globalThis.ks.jsonRenderers ??= {}, globalThis.ks.jsonRenderers.runInstructions ??= {}, globalThis.ks.jsonRenderers.runInstructions.steps = {
-		meta: ln,
+		meta: un,
 		runInstructions: e
 	});
-}, dn = ({ instructions: e = [], baseKey: t, data: n, showLog: r = !1 } = {}) => {
-	let i = cn[t];
-	return console.log("aaaaaaaaaaa : ", e, t), e.forEach((e) => {
-		r && console.log(`[runStep] ${e}`), sn(e, {
-			base: i,
-			data: n
-		}, r);
-	}), i;
+}, fn = (e = {}) => {
+	ln(e);
+	let { instructions: t = [], baseKey: n, data: r, showLog: i = !1 } = e, a = cn[n];
+	return t.forEach((e) => {
+		i && console.log(`[runStep] ${e}`), sn(e, {
+			base: a,
+			data: r
+		}, i);
+	}), a;
 };
-un(dn);
-export { dn as default, sn as executeStep };
+dn(fn);
+export { fn as default, sn as executeStep, ln as guardFunc };
