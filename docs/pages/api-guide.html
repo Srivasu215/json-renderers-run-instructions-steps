@@ -48,12 +48,78 @@
         }
 
         .navbar {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
             z-index: 1000;
+            padding: 0.75rem 0;
+        }
+
+        .navbar-brand {
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .navbar-nav {
+            flex-wrap: nowrap;
+        }
+
+        .navbar-nav .nav-link {
+            white-space: nowrap;
+            padding: 0.4rem 0.75rem !important;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background: #f1f5f9;
+            color: var(--primary) !important;
+        }
+
+        .navbar-nav .nav-link.active {
+            background: #eef2ff;
+            color: var(--primary) !important;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+            padding: 0.4rem 0.9rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border-radius: 999px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            line-height: 1.2;
+        }
+
+        .nav-btn.btn-live {
+            background: #eef2ff;
+            color: #4f46e5;
+            border: 1px solid #c7d2fe;
+        }
+        .nav-btn.btn-live:hover {
+            background: #4f46e5;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+        }
+
+        .nav-btn.btn-npm {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        .nav-btn.btn-npm:hover {
+            background: #dc2626;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
         }
 
         .page-header {
@@ -106,20 +172,30 @@
 <body>
     <div class="spotlight-follower" id="spotlight"></div>
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
+            <!-- Navigation -->
+    <nav class="navbar navbar-expand-xl">
+        <div class="container-fluid px-3 px-xl-5">
             <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
                 <i class="bi bi-diagram-3-fill text-primary fs-4"></i>
                 <span class="text-dark fw-bold">json-renderers-run-instructions-steps</span>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace">v1.5.1</span>
             </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navContent">
-                <ul class="navbar-nav ms-auto align-items-center gap-2">
+                <ul class="navbar-nav ms-auto align-items-center gap-1 gap-xl-2 my-2 my-xl-0">
                     <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="../index.html">Home</a></li>
                     <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="./the-story.html">The Story</a></li>
                     <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="./architecture.html">Architecture</a></li>
-                    <li class="nav-item"><a class="nav-link fw-semibold text-primary active" href="./api-guide.html">API Guide</a></li>
+                    <li class="nav-item"><a class="nav-link fw-semibold active text-primary" href="./api-guide.html">API Guide</a></li>
                     <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="./samples-showcase.html">Samples</a></li>
+                    <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="./playground.html">Playground</a></li>
+                    <li class="nav-item ms-xl-2">
+                        <a class="nav-btn btn-npm" href="https://www.npmjs.com/package/json-renderers-run-instructions-steps" target="_blank">
+                            <i class="bi bi-box-seam me-1"></i> npm
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -131,7 +207,7 @@
             <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold mb-2">Documentation & Reference</span>
             <h1 class="display-5 fw-bold text-dark">API Guide & Reference</h1>
             <p class="lead text-secondary mx-auto mb-0" style="max-width: 720px;">
-                Complete specifications for <code>runInstructions</code>, <code>executeStep</code>, configuration options, and state contracts.
+                Complete specifications for <code>runInstructions</code>, <code>guardFunc</code>, <code>executeStep</code>, and global registration.
             </p>
         </div>
     </header>
@@ -141,24 +217,24 @@
         <!-- runInstructions -->
         <div class="api-card">
             <div class="d-flex align-items-center justify-content-between mb-3">
-                <h3 class="fw-bold text-dark mb-0 font-monospace text-primary">runInstructions(options)</h3>
+                <h3 class="fw-bold text-dark mb-0 font-monospace text-primary">runInstructions(inConfig)</h3>
                 <span class="badge bg-success-subtle text-success fs-6">Default Export</span>
             </div>
             <p class="text-secondary">
-                Executes an array of declarative blueprint instruction keys sequentially on a provided base canvas using the supplied data.
+                Validates the config object with <code>guardFunc</code>, resolves the base canvas AST from <code>declarative-spec[baseKey]</code>, and executes each instruction key sequentially.
             </p>
 
             <h6 class="fw-bold text-dark mt-4">Signature</h6>
             <div class="code-box mb-3">
-<pre><code>runInstructions({
+<pre><code>runInstructions(inConfig: {
+    baseKey: string,
     instructions: string[],
-    base: object,
-    data: object,
+    data: { columns?: any[], data?: any[], [key: string]: any },
     showLog?: boolean
 }): object</code></pre>
             </div>
 
-            <h6 class="fw-bold text-dark mt-4">Parameters</h6>
+            <h6 class="fw-bold text-dark mt-4">Parameters (inConfig)</h6>
             <div class="table-responsive">
                 <table class="table table-bordered param-table small">
                     <thead>
@@ -171,28 +247,28 @@
                     </thead>
                     <tbody>
                         <tr>
+                            <td><code>baseKey</code></td>
+                            <td><code>string</code></td>
+                            <td>Yes</td>
+                            <td>Non-empty string matching an existing key in <code>declarative-spec</code> (e.g. <code>"tableSimple"</code>, <code>"selectBase"</code>, <code>"dataListSimple"</code>, <code>"formSimple"</code>).</td>
+                        </tr>
+                        <tr>
                             <td><code>instructions</code></td>
                             <td><code>string[]</code></td>
                             <td>Yes</td>
-                            <td>Array of instruction keys defined in <code>declarative-instructions</code> (e.g. <code>["buildColgroup", "buildHeader", "buildBody"]</code>).</td>
-                        </tr>
-                        <tr>
-                            <td><code>base</code></td>
-                            <td><code>object</code></td>
-                            <td>Yes</td>
-                            <td>The target canvas AST node (e.g., from <code>spec.tableSimple</code>, <code>spec.selectBase</code>, <code>spec.formSimple</code>) that will be mutated in place.</td>
+                            <td>Non-empty array of non-empty strings matching blueprint keys in <code>declarative-instructions</code>.</td>
                         </tr>
                         <tr>
                             <td><code>data</code></td>
                             <td><code>object</code></td>
                             <td>Yes</td>
-                            <td>Input data bag containing <code>columns</code> array and/or <code>data</code> rows array.</td>
+                            <td>Data payload containing <code>columns</code> array and/or <code>data</code> rows array.</td>
                         </tr>
                         <tr>
                             <td><code>showLog</code></td>
                             <td><code>boolean</code></td>
                             <td>No</td>
-                            <td>When set to <code>true</code>, outputs debugging info for each step execution to console. Default: <code>false</code>.</td>
+                            <td>When set to <code>true</code>, outputs debugging info for each step. Default: <code>false</code>.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -200,8 +276,26 @@
 
             <h6 class="fw-bold text-dark mt-4">Return Value</h6>
             <p class="small text-muted mb-0">
-                Returns the mutated <code>base</code> specification object containing the complete AST tree with all generated children and attributes.
+                Returns the mutated <code>base</code> specification object containing the complete AST with all generated children and attributes.
             </p>
+        </div>
+
+        <!-- guardFunc -->
+        <div class="api-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h3 class="fw-bold text-dark mb-0 font-monospace text-primary">guardFunc(inConfig)</h3>
+                <span class="badge bg-warning-subtle text-dark fs-6">Named Export</span>
+            </div>
+            <p class="text-secondary">
+                Validates the input configuration before execution begins. Throws meaningful <code>TypeError</code> or <code>Error</code> if inputs are invalid.
+            </p>
+            <ul>
+                <li>Throws <code>TypeError("Config must be an object")</code> if <code>inConfig</code> is not a valid non-array object.</li>
+                <li>Throws <code>TypeError("baseKey must be a non-empty string")</code> if <code>baseKey</code> is invalid.</li>
+                <li>Throws <code>Error('baseKey "..." does not exist in declarative-spec')</code> if the key is missing from the spec repo.</li>
+                <li>Throws <code>TypeError("instructions must be an Array")</code> or <code>Error("instructions cannot be empty")</code>.</li>
+                <li>Asserts each instruction entry is a non-empty string.</li>
+            </ul>
         </div>
 
         <!-- executeStep -->
@@ -211,95 +305,24 @@
                 <span class="badge bg-primary-subtle text-primary fs-6">Named Export</span>
             </div>
             <p class="text-secondary">
-                Executes a single instruction step against the state context. Useful for step-by-step debugging, intermediate verification, or custom pipeline runners.
+                Executes a single instruction step against a state context <code>{ base, data }</code>.
             </p>
-
-            <h6 class="fw-bold text-dark mt-4">Signature</h6>
-            <div class="code-box mb-3">
-<pre><code>executeStep(
-    key: string,
-    state: { base: object, data: object },
-    showLog: boolean = false
-): object | any[]</code></pre>
-            </div>
-
-            <h6 class="fw-bold text-dark mt-4">Parameters</h6>
-            <div class="table-responsive">
-                <table class="table table-bordered param-table small">
-                    <thead>
-                        <tr>
-                            <th>Parameter</th>
-                            <th>Type</th>
-                            <th>Required</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>key</code></td>
-                            <td><code>string</code></td>
-                            <td>Yes</td>
-                            <td>The exact blueprint key name from <code>declarative-instructions</code>.</td>
-                        </tr>
-                        <tr>
-                            <td><code>state</code></td>
-                            <td><code>object</code></td>
-                            <td>Yes</td>
-                            <td>An object holding references to <code>{ base, data }</code>.</td>
-                        </tr>
-                        <tr>
-                            <td><code>showLog</code></td>
-                            <td><code>boolean</code></td>
-                            <td>No</td>
-                            <td>Enables console logging. Default: <code>false</code>.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h6 class="fw-bold text-dark mt-4">Return Value</h6>
-            <p class="small text-muted mb-0">
-                Returns the freshly generated subtree node(s) computed by the dimensional transformer function for that step.
-            </p>
-        </div>
-
-        <!-- Helpers -->
-        <div class="api-card">
-            <h3 class="fw-bold text-dark mb-3">Internal Helper Functions</h3>
-            <p class="text-secondary small">
-                Exported from <code>src/v4/helpers.js</code>:
-            </p>
-            <div class="mb-4">
-                <h6 class="fw-bold text-dark font-monospace">resolveSource(sourcePath, state)</h6>
-                <p class="small text-muted">
-                    Resolves the root or nested data subset from <code>state</code> using either <code>sourcePath.jsonPath</code> via <code>jsonpathly</code> or direct <code>sourcePath.filePath</code> traversal.
-                </p>
-            </div>
-            <div>
-                <h6 class="fw-bold text-dark font-monospace">writeResult(state, destinationPath, result, showLog)</h6>
-                <p class="small text-muted">
-                    Writes the calculated result spec directly to <code>destinationPath</code> on <code>state</code> using <code>json-write-path</code>. Safely skips when the destination container is not present.
-                </p>
-            </div>
-        </div>
-
-        <!-- TypeScript definitions -->
-        <div class="api-card">
-            <h3 class="fw-bold text-dark mb-3">TypeScript Interfaces</h3>
             <div class="code-box">
-<pre><code><span class="text-warning">export interface</span> StepRunnerOptions {
-    instructions: string[];
-    base: Record&lt;string, any&gt;;
-    data: {
-        columns?: Array&lt;Record&lt;string, any&gt;&gt;;
-        data?: Array&lt;Record&lt;string, any&gt;&gt;;
-        [key: string]: any;
-    };
-    showLog?: boolean;
-}
+<pre><code>executeStep(key: string, state: { base: object, data: object }, showLog?: boolean): any</code></pre>
+            </div>
+        </div>
 
-<span class="text-warning">export function</span> runInstructions(options: StepRunnerOptions): Record&lt;string, any&gt;;
-<span class="text-warning">export function</span> executeStep(key: string, state: Record&lt;string, any&gt;, showLog?: boolean): any;</code></pre>
+        <!-- Global Registration -->
+        <div class="api-card">
+            <h3 class="fw-bold text-dark mb-3">Browser Global Registration</h3>
+            <p class="text-secondary small">
+                When using the distributed bundle (`docs/dist/v6/min.js`), the runner is automatically attached to:
+            </p>
+            <div class="code-box">
+<pre><code>window.ks.jsonRenderers.runInstructions.steps = {
+    meta: { name: "json-renderers-run-instructions", version: "1.6.1" },
+    runInstructions: Function
+};</code></pre>
             </div>
         </div>
     </main>
@@ -311,7 +334,8 @@
             <a href="../index.html" class="text-decoration-none text-light me-3">Home</a>
             <a href="./the-story.html" class="text-decoration-none text-light me-3">The Story</a>
             <a href="./architecture.html" class="text-decoration-none text-light me-3">Architecture</a>
-            <a href="./samples-showcase.html" class="text-decoration-none text-light">Samples</a>
+            <a href="./samples-showcase.html" class="text-decoration-none text-light me-3">Samples</a>
+            <a href="https://www.npmjs.com/package/json-renderers-run-instructions-steps" target="_blank" class="text-decoration-none text-light">npm</a>
         </div>
     </footer>
 

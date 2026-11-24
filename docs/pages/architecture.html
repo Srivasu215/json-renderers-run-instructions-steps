@@ -48,12 +48,78 @@
         }
 
         .navbar {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
             z-index: 1000;
+            padding: 0.75rem 0;
+        }
+
+        .navbar-brand {
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .navbar-nav {
+            flex-wrap: nowrap;
+        }
+
+        .navbar-nav .nav-link {
+            white-space: nowrap;
+            padding: 0.4rem 0.75rem !important;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background: #f1f5f9;
+            color: var(--primary) !important;
+        }
+
+        .navbar-nav .nav-link.active {
+            background: #eef2ff;
+            color: var(--primary) !important;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+            padding: 0.4rem 0.9rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border-radius: 999px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            line-height: 1.2;
+        }
+
+        .nav-btn.btn-live {
+            background: #eef2ff;
+            color: #4f46e5;
+            border: 1px solid #c7d2fe;
+        }
+        .nav-btn.btn-live:hover {
+            background: #4f46e5;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+        }
+
+        .nav-btn.btn-npm {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        .nav-btn.btn-npm:hover {
+            background: #dc2626;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
         }
 
         .page-header {
@@ -114,20 +180,30 @@
 <body>
     <div class="spotlight-follower" id="spotlight"></div>
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
+            <!-- Navigation -->
+    <nav class="navbar navbar-expand-xl">
+        <div class="container-fluid px-3 px-xl-5">
             <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
                 <i class="bi bi-diagram-3-fill text-primary fs-4"></i>
                 <span class="text-dark fw-bold">json-renderers-run-instructions-steps</span>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace">v1.5.1</span>
             </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navContent">
-                <ul class="navbar-nav ms-auto align-items-center gap-2">
+                <ul class="navbar-nav ms-auto align-items-center gap-1 gap-xl-2 my-2 my-xl-0">
                     <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="../index.html">Home</a></li>
                     <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="./the-story.html">The Story</a></li>
-                    <li class="nav-item"><a class="nav-link fw-semibold text-primary active" href="./architecture.html">Architecture</a></li>
+                    <li class="nav-item"><a class="nav-link fw-semibold active text-primary" href="./architecture.html">Architecture</a></li>
                     <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="./api-guide.html">API Guide</a></li>
                     <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="./samples-showcase.html">Samples</a></li>
+                    <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="./playground.html">Playground</a></li>
+                    <li class="nav-item ms-xl-2">
+                        <a class="nav-btn btn-npm" href="https://www.npmjs.com/package/json-renderers-run-instructions-steps" target="_blank">
+                            <i class="bi bi-box-seam me-1"></i> npm
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -137,21 +213,77 @@
     <header class="page-header text-center">
         <div class="container">
             <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold mb-2">Technical Deep Dive</span>
-            <h1 class="display-5 fw-bold text-dark">Engine Architecture</h1>
+            <h1 class="display-5 fw-bold text-dark">Engine Architecture v6</h1>
             <p class="lead text-secondary mx-auto mb-0" style="max-width: 720px;">
-                How source resolution, dimension dispatch, and in-place tree writing collaborate inside the 4-line execution loop.
+                How <code>guardFunc</code>, <code>declarative-spec</code> base resolution, and 3D spatial execution collaborate inside the runner pipeline.
             </p>
         </div>
     </header>
 
     <!-- Main -->
     <main class="container py-5" style="max-width: 950px;">
-        <!-- The Core Engine -->
+        <!-- The v6 Runner Loop -->
         <div class="arch-card">
-            <h3 class="fw-bold text-dark mb-3">1. The 4-Line Core Engine: executeStep</h3>
+            <h3 class="fw-bold text-dark mb-3">1. The v6 Execution Loop: runInstructions</h3>
             <p>
-                In `v4`, the core step execution function has been reduced to four clean, expressive lines with zero defensive boilerplate:
+                In `v6`, the runner orchestrates validation, base resolution, and step execution seamlessly:
             </p>
+            <div class="code-snippet mb-3">
+<pre><code><span class="text-warning">const</span> runInstructions = (inConfig = {}) => {
+    guardFunc(inConfig);
+
+    <span class="text-warning">const</span> {
+        instructions = [],
+        baseKey,
+        data,
+        showLog = <span class="text-info">false</span>
+    } = inConfig;
+
+    <span class="text-warning">const</span> base = spec[baseKey];
+
+    instructions.forEach(key => {
+        <span class="text-warning">if</span> (showLog) console.log(`[runStep] ${key}`);
+        executeStep(key, { base, data }, showLog);
+    });
+
+    <span class="text-warning">return</span> base;
+};</code></pre>
+            </div>
+            <div class="d-flex flex-column gap-3 mt-4">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="step-badge">1</div>
+                    <div>
+                        <strong>Pre-Flight Guard Verification:</strong>
+                        <p class="text-muted small mb-0"><code>guardFunc</code> asserts config shape, ensures <code>baseKey</code> exists in <code>declarative-spec</code>, and validates the instructions array.</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start gap-3">
+                    <div class="step-badge">2</div>
+                    <div>
+                        <strong>Base Canvas Resolution:</strong>
+                        <p class="text-muted small mb-0">Fetches <code>spec[baseKey]</code> directly from <code>declarative-spec</code> without manual deep cloning by the caller.</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start gap-3">
+                    <div class="step-badge">3</div>
+                    <div>
+                        <strong>Step Iteration via executeStep:</strong>
+                        <p class="text-muted small mb-0">Each instruction key is dispatched to its 0D, 1D, or 2D transformer and written in place.</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start gap-3">
+                    <div class="step-badge">4</div>
+                    <div>
+                        <strong>Global Registration:</strong>
+                        <p class="text-muted small mb-0">Automatically exposed to <code>window.ks.jsonRenderers.runInstructions.steps</code> for seamless script-tag and CDN consumption.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- The 4-Line executeStep -->
+        <div class="arch-card">
+            <h3 class="fw-bold text-dark mb-3">2. The 4-Line executeStep Core</h3>
             <div class="code-snippet mb-3">
 <pre><code><span class="text-warning">export const</span> executeStep = (key, state, showLog = <span class="text-info">false</span>) => {
     <span class="text-warning">const</span> instruction = instructions[key];
@@ -160,100 +292,11 @@
     <span class="text-warning">return</span> result;
 };</code></pre>
             </div>
-            <div class="d-flex flex-column gap-3 mt-4">
-                <div class="d-flex align-items-start gap-3">
-                    <div class="step-badge">1</div>
-                    <div>
-                        <strong>Instruction Lookup:</strong>
-                        <p class="text-muted small mb-0">Fetches the declarative instruction blueprint directly from <code>declarative-instructions</code> using its unique string identifier (e.g., <code>"buildColgroup"</code>).</p>
-                    </div>
-                </div>
-                <div class="d-flex align-items-start gap-3">
-                    <div class="step-badge">2</div>
-                    <div>
-                        <strong>Dimensional Type Dispatch:</strong>
-                        <p class="text-muted small mb-0">Maps <code>instruction.type</code> (<code>single</code>, <code>rowOnColumn</code>, or <code>columnOnRow</code>) to the appropriate mathematical transformer without touching DOM nodes.</p>
-                    </div>
-                </div>
-                <div class="d-flex align-items-start gap-3">
-                    <div class="step-badge">3</div>
-                    <div>
-                        <strong>In-Place Canvas Mounting:</strong>
-                        <p class="text-muted small mb-0"><code>writeResult</code> locates the destination mount point inside the target canvas specification and commits the computed node AST.</p>
-                    </div>
-                </div>
-                <div class="d-flex align-items-start gap-3">
-                    <div class="step-badge">4</div>
-                    <div>
-                        <strong>Synchronous Return:</strong>
-                        <p class="text-muted small mb-0">Returns the transformed subtree result for optional intermediate validation or chaining.</p>
-                    </div>
-                </div>
-            </div>
         </div>
 
-        <!-- The Dispatcher -->
+        <!-- Ecosystem Integration Table -->
         <div class="arch-card">
-            <h3 class="fw-bold text-dark mb-3">2. The Dimension Dispatcher Table</h3>
-            <p>
-                The <code>types</code> registry routes instructions based on their geometric dimensionality:
-            </p>
-            <div class="code-snippet mb-3">
-<pre><code><span class="text-warning">const</span> types = {
-    single: (instruction, state) => {
-        <span class="text-warning">const</span> template = spec[instruction.templateKey];
-        <span class="text-warning">const</span> source = resolveSource(instruction.sourcePath, state);
-        <span class="text-warning">const</span> fn = instruction.func === <span class="text-success">"fromCollection"</span> ? fromCollection : applyTemplate;
-        <span class="text-warning">return</span> fn(source, template);
-    },
-    rowOnColumn: (instruction, { data }) => {
-        <span class="text-warning">return</span> rowOnColumn({
-            columns: data?.columns,
-            data,
-            columnSpec: spec[instruction.templateKey.columnKey],
-            rowSpec: spec[instruction.templateKey.rowKey]
-        });
-    },
-    columnOnRow: (instruction, { data }) => {
-        <span class="text-warning">return</span> columnOnRow({
-            columns: data?.columns,
-            data,
-            columnSpec: spec[instruction.templateKey.columnKey],
-            rowSpec: spec[instruction.templateKey.rowKey]
-        });
-    }
-};</code></pre>
-            </div>
-        </div>
-
-        <!-- Helpers & Path Navigation -->
-        <div class="arch-card">
-            <h3 class="fw-bold text-dark mb-3">3. Path Navigation Helpers (helpers.js)</h3>
-            <p>
-                Two companion helper functions handle input data resolution and output canvas insertion:
-            </p>
-
-            <h5 class="fw-bold text-primary mt-4">A. resolveSource(sourcePath, state)</h5>
-            <p class="text-secondary small">
-                Extracts the required data subset from the state object. Supports dual navigation modes:
-            </p>
-            <ul>
-                <li><strong>JSONPath Mode (<code>sourcePath.jsonPath</code>)</strong>: Uses <code>jsonpathly</code> to perform fast, expressive queries (e.g. <code>"$.data[*]"</code> or <code>"$.columns"</code>).</li>
-                <li><strong>Path Array Mode (<code>sourcePath.filePath</code>)</strong>: Traverses nested object keys sequentially for direct access.</li>
-            </ul>
-
-            <h5 class="fw-bold text-primary mt-4">B. writeResult(state, destinationPath, result, showLog)</h5>
-            <p class="text-secondary small">
-                Applies the generated spec directly into the canvas. Uses <code>json-write-path</code> to find target branches. Includes safe-skipping so missing optional containers won't crash execution.
-            </p>
-        </div>
-
-        <!-- Ecosystem Diagram -->
-        <div class="arch-card">
-            <h3 class="fw-bold text-dark mb-3">4. Ecosystem Dependencies & Integration</h3>
-            <p class="text-secondary mb-3">
-                Each package in the stack has a single, strictly bounded responsibility:
-            </p>
+            <h3 class="fw-bold text-dark mb-3">3. Ecosystem Integration</h3>
             <div class="table-responsive">
                 <table class="table table-hover table-bordered small">
                     <thead class="table-light">
@@ -264,32 +307,28 @@
                     </thead>
                     <tbody>
                         <tr>
+                            <td><code>declarative-spec</code></td>
+                            <td>Provides canonical base AST templates (resolved via <code>baseKey</code>).</td>
+                        </tr>
+                        <tr>
                             <td><code>declarative-instructions</code></td>
-                            <td>Provides instruction metadata, template keys, and destination paths.</td>
-                        </tr>
-                        <tr>
-                            <td><code>spec-repo</code></td>
-                            <td>Central catalog for raw element specifications (tags, attributes, shells).</td>
-                        </tr>
-                        <tr>
-                            <td><code>json-transformer-funcs-primitive</code></td>
-                            <td>0D primitive template interpolator.</td>
-                        </tr>
-                        <tr>
-                            <td><code>json-transformer-funcs-one-dimension</code></td>
-                            <td>1D linear collection array mapper (<code>fromCollection</code>).</td>
+                            <td>Supplies instruction blueprints, template keys, and destination paths.</td>
                         </tr>
                         <tr>
                             <td><code>json-transformer-funcs-two-dimensions</code></td>
                             <td>2D Cartesian matrix engine (<code>rowOnColumn</code>, <code>columnOnRow</code>).</td>
                         </tr>
                         <tr>
-                            <td><code>jsonpathly</code></td>
-                            <td>High-speed JSONPath query engine for input data resolution.</td>
+                            <td><code>json-transformer-funcs-one-dimension</code></td>
+                            <td>1D linear array projection (<code>fromCollection</code>).</td>
                         </tr>
                         <tr>
-                            <td><code>json-write-path</code></td>
-                            <td>In-place AST tree mutator for target specification insertion.</td>
+                            <td><code>json-transformer-funcs-primitive</code></td>
+                            <td>0D primitive template interpolation (<code>applyTemplate</code>).</td>
+                        </tr>
+                        <tr>
+                            <td><code>jsonpathly</code> & <code>json-write-path</code></td>
+                            <td>Query input state & in-place destination AST mounting.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -304,7 +343,8 @@
             <a href="../index.html" class="text-decoration-none text-light me-3">Home</a>
             <a href="./the-story.html" class="text-decoration-none text-light me-3">The Story</a>
             <a href="./api-guide.html" class="text-decoration-none text-light me-3">API Guide</a>
-            <a href="./samples-showcase.html" class="text-decoration-none text-light">Samples</a>
+            <a href="./samples-showcase.html" class="text-decoration-none text-light me-3">Samples</a>
+            <a href="https://www.npmjs.com/package/json-renderers-run-instructions-steps" target="_blank" class="text-decoration-none text-light">npm</a>
         </div>
     </footer>
 

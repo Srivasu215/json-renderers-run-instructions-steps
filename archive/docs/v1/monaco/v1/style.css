@@ -1,0 +1,253 @@
+:root {
+    --bg-page: #0f1117;
+    --bg-header: #181a20;
+    --bg-editor: #1e1e1e;
+    --bg-footer: #12141a;
+    --border-color: #2b2f3a;
+    --border-subtle: #232733;
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --accent-blue: #38bdf8;
+    --accent-blue-bg: rgba(56, 189, 248, 0.12);
+    --accent-blue-border: rgba(56, 189, 248, 0.35);
+    --accent-green: #34d399;
+    --accent-green-bg: rgba(52, 211, 153, 0.12);
+    --accent-green-border: rgba(52, 211, 153, 0.35);
+    --accent-amber: #fbbf24;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    overflow: hidden;
+    user-select: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+.studio-app {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   Header Component
+   ========================================================================== */
+.studio-header {
+    height: 44px;
+    background-color: var(--bg-header);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+.header-left, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    transition: opacity 0.15s ease;
+}
+
+.brand-link:hover {
+    opacity: 0.85;
+}
+
+.brand-icon {
+    color: var(--accent-blue);
+    font-size: 16px;
+}
+
+.version-pill {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    background: var(--accent-blue-bg);
+    border: 1px solid var(--accent-blue-border);
+    padding: 1px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.header-divider {
+    width: 1px;
+    height: 18px;
+    background-color: var(--border-color);
+    margin: 0 4px;
+}
+
+/* File Button Component */
+.btn-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #242834;
+    border: 1px solid #363b4d;
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    transition: all 0.15s ease;
+}
+
+.btn-file:hover {
+    background-color: #2f3445;
+    border-color: #4a5169;
+    transform: translateY(-1px);
+}
+
+.btn-file:active {
+    background-color: #1e212b;
+    transform: translateY(0);
+}
+
+.btn-file i {
+    color: var(--accent-blue);
+    font-size: 13px;
+}
+
+/* Active File Pill Component */
+.active-file-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background-color: rgba(36, 40, 52, 0.7);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 3px 10px;
+    font-size: 12px;
+}
+
+.active-file-pill i {
+    color: var(--accent-amber);
+    font-size: 13px;
+}
+
+.active-file-label {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.active-file-name {
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-weight: 600;
+}
+
+/* Status Notification Pill */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    transition: opacity 0.25s ease;
+}
+
+.status-pill.success {
+    color: var(--accent-green);
+    background: var(--accent-green-bg);
+    border: 1px solid var(--accent-green-border);
+}
+
+.status-pill.hidden {
+    display: none;
+}
+
+.docs-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+}
+
+.docs-link:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* ==========================================================================
+   Monaco Editor Workspace Component
+   ========================================================================== */
+.studio-workspace {
+    flex: 1;
+    width: 100%;
+    height: calc(100vh - 44px - 24px);
+    background-color: var(--bg-editor);
+    position: relative;
+    overflow: hidden;
+}
+
+.editor-surface {
+    width: 100%;
+    height: 100%;
+}
+
+/* ==========================================================================
+   Footer Component
+   ========================================================================== */
+.studio-footer {
+    height: 24px;
+    background-color: var(--bg-footer);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+}
+
+.footer-left, .footer-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--accent-blue);
+    font-weight: 600;
+}
