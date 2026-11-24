@@ -1,6 +1,6 @@
 import columns from "../common/columns.json" with { type: "json" };
 import data from "../common/data.json" with { type: "json" };
-import "../../../docs/dist/v6/min.js";
+import "../../../docs/dist/v7/min.js";
 // import { spec } from "spec-repo";
 
 const targetHtmlId = "dom-render-container";
@@ -9,13 +9,16 @@ const start = () => {
     try {
         const localInstructions = window.ks.declarative.definitions.data.table.simple.instructions;
         const localBaseFromSpec = window.ks.declarative.definitions.data.table.simple.baseFromSpec;
+        const spec = window.ks.declarative.spec.data;
+        console.log("aaaaaa : ", spec);
 
         const result = window.ks.jsonRenderers.runInstructions.steps.runInstructions({
             instructions: localInstructions,
-            baseKey: localBaseFromSpec,
+            base: spec[localBaseFromSpec],
             data: { columns, data },
             showLog: false
         });
+        console.log("result : ", result);
 
         window.ks.jsonToDom.appendToDom({
             jsonSpec: result,
